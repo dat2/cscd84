@@ -1,0 +1,32 @@
+seed 289
+N 1245
+K 9
+Temperature 0
+Decay Factor 0
+Initial K-medians guess:
+
+[[array([ 117.5645496]), array([ 877.08005837])], [array([ 367.40871578]), array([ 612.74691267])], [array([ 488.21707051]), array([ 483.46577313])], [array([ 656.58072209]), array([ 932.44146076])], [array([ 522.626569]), array([ 190.16761727])], [array([ 813.01233104]), array([ 909.52911117])], [array([ 509.8717618]), array([ 945.6028928])], [array([ 433.67470588]), array([ 31.92088591])], [array([ 167.4742864]), array([ 456.1061245])]]
+Initial assignment cost (average distance from a point to the closest candidate median):
+
+171.90512721
+170.28315446
+170.118747109
+147.814160704
+147.448357054
+144.067935293
+143.098801126
+142.319174732
+138.072993973
+137.398151123
+136.859347678
+128.354685893
+127.134304296
+125.847283828
+121.917310859
+121.047570785
+120.194061011
+No improvement for past 150 iterations. Search stop.
+
+Press 'q' to quit
+
+final cost: 120.194061011

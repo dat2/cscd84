@@ -1,0 +1,28 @@
+import math
+all_points = []
+current_medians = []
+Temperature = 0
+Decay = 1.0
+N = -1
+K = -1
+
+def current_cost(guess):
+    global K
+    global all_points
+    global N
+    cost = 0
+    for i in range(N):
+        dst = 1000000000.0
+        pt = all_points[i]
+        for j in range(K):
+            kp = guess[j]
+            d_est = (pt[0] - kp[0]) * (pt[0] - kp[0]) + (pt[1] - kp[1]) * (pt[1] - kp[1])
+            if d_est < dst:
+                dst = d_est
+
+        cost = cost + math.sqrt(dst)
+
+    return cost / N
+
+
+

@@ -1,0 +1,212 @@
+    153.280081664CSC D84 - Artificial Intelligence, Winter 2015
+
+Assignment 2 - Local Search
+
+This assignment is worth:
+
+10 AIUs (Artificial Intelligence Units)
+toward the 40% assignment component of your final
+mark.
+
+________________________________________________
+
+Student Name (last, first): Dujay, Nicholas
+
+Student number: 999194900
+
+UTORid: dujaynic
+
+READ THIS AND SIGN YOUR NAME AT THE END:
+
+ I certify that I have read the UTSC code on academic
+honesty and plaguarism. All work submitted as part
+of this assignment is my own.
+
+    Signed: _Nicholas Dujay__
+
+
+(-5 marks for failing to provide the identifying
+ information requested above)
+________________________________________________
+
+Answer the following questions. Be concise and clear
+but explain carefully when needed.
+
+For experiment 1)
+
+    - What is the average cost of the initial solution (average over all runs)?
+    153.280081664
+
+    - What is the average cost of the final solution over your five runs?
+    117.702786961
+
+    - Does the number of input points have a strong
+          influence on the final location of the medians?
+          (i.e. are the solutions all similar and reasonable? or do they change wildly?)
+    The number of input points do not seem to affect the final location of the medians,
+    the cost of all of the 5 runs seems to be converging to a singe value independently
+    of N.
+
+For experiment 2)
+
+    - Record the initial seed values used:
+    123,723,7456,6725,9158
+
+    - What is the average initial cost over all runs?
+    140.350844505
+
+    - What is the average final cost over all runs?
+    115.237135771
+
+    - What is the *range* of the final cost values over all runs?
+    [112.150154522,118.662432391]
+
+    - Is the search stable? (i.e. does the initial random
+          seed strongly influence the result?
+
+    Seed: 123 final cost: 114.863873557
+    Seed: 723 final cost: 114.099657345
+    Seed: 7456 final cost: 112.150154522
+    Seed: 6725 final cost: 116.409561041
+    Seed: 9158 final cost: 118.662432391
+
+    The final cost does not seem to be affected very strongly by the initial seed.
+
+For experiment 3)
+
+    - What are the final costs for each temperature?
+    Temperature: 250.0 Final Cost: 109.80999045
+    Temperature: 100.0 Final Cost: 112.795767664
+    Temperature: 50.0 Final Cost: 107.33719955
+
+    - Does the temperature have a strong influence on the goodness
+          of the final solution?
+
+      The temperature appears not to have a strong influence on the goodness. The
+      initial temperature of 100 has a higher final cost than the other initial
+      temperatures.
+
+For experiment 4)
+
+    - What are the final costs for each decay factor?
+     Decay Factor: 0.999, Final Cost: 114.998020535
+     Decay Factor: 0.99, Final Cost: 113.919405718
+     Decay Factor: 0.9, Final Cost: 114.359465348
+
+    - Does the decay factor strongly influence the goodness of the
+      final solution?
+
+      Apparently not. The final cost is almost the same for every decay factor.
+
+From 3) and 4)
+
+    - What is the average final cost for the experiments in 3)?
+    109.980985888
+
+    - What is the average final cost for the experiments in 4)?
+    114.425630534
+
+    - What is the *best* solution found either in 3) or 4)? (what is its cost?)
+    107.33719955
+
+    - Does deterministic annealing (with suitable temperature and
+      decay) improve the results over standard local search?
+      if so, by how much? (in % please)
+    Yes, it improves it by about 9%.
+
+From 5) and 6)
+
+    - Record the initial seeds used:
+    6785, 4819, 8147
+
+    - Record the final solution cost for your three DA runs
+    125.907015496, 129.477201964, 121.060140361
+
+    - Record the final solution cost for simple local search
+    139.66051323
+
+    - Overall, does DA improve the solution in a meaningful way?
+      (give the largest observed % improvement, whether it
+           is positive or negative)
+      Use the average final cost for DA here
+
+      The largest observed improvement is 10% from experiment 5 and 6. Overall,
+      DA improves the solution by about 10%. It is hard to say whether or not
+      we are reaching a global minimum on goodness though.
+
+From 1) through 6)
+
+    - Does local search produce reasonably good results on this
+      problem?
+
+      Yes. The result is usually not much worse than DA in this scenario, DA only
+      gives answers that are 10% better than local search.
+
+    - Is Deterministic Annealing worth the extra computation time
+      on this particular problem?
+
+      I would say no. The amount of extra time that Deterministic Annealining
+      needed compared to the marginal increase that it produced is just not high
+      enough to warrant using Deterministic Annealing for this particular problem.
+
+For 7) and 8)
+
+    - Record the initial seeds used for DA:
+    -1859, -4278, -5172
+
+    - Record the final cost for the solutions found by DA
+    92.2155675974, 91.7981211491, 92.2969656549
+
+    - Record the final cost of the local search solution
+    95.8576264857
+
+    - What is the % improvement (positive or negative) of the
+      DA solutions compared to the local search solutions?
+      Use the average final cost for DA here.
+
+    The improvement is about 4% for experiments 7 and 8.
+
+
+Finally:
+
+    - How would you modify the cost function so that, instead
+      of simple Euclidean distance from a point on the GTA
+      map to one of the possible restaurant locations, your
+          cost considers the time it would take to travel from
+          that point to the closest restaurant?
+
+      We need a well thought answer, not a vague statement.
+
+_____________________________________________________
+
+Mark with an 'x' where appropriate. If something is only
+working partially, briefly describe what works, what
+doesn't work, or what problems exist.
+
+              Complete/Working    Partial     Not done
+
+Local Search         X
+
+D. Annealing         X
+_____________________________________________________
+
+Marking:
+
+(10 marks) Correctly implementing local search - it
+           progressively improves results and yields
+           a reasonable final solution.
+
+(15 marks) Correctly implementing Deterministic
+           Annealing. The search can explore states
+           that appear worse, but eventually reaches
+           a reasonable solution. Temperature
+           decay is managed appropriately
+
+(30 marks) The answers in this report
+
+(15 marks) Correctly solving the tigers and people
+       non-deterministic programming task
+
+Total for A2:       / out of 70
+
+

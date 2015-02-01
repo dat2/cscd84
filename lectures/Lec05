@@ -1,0 +1,42 @@
+Constraint Satisfaction
+(I can't get no)
+
+restrictions on variables
+set of variables represent your problem
+ex. quantities in chemical reaction, time / schedule for operation
+
+- set of variables Xi
+- each variable has a domain di
+- goal test -> checks for a solution (if assigning each variables satisfy the constraints)
+
+map colouring problem
+constraint graph
+
+edges represent constraints, nodes represent countries
+types of CSPs (constraint solving problems) which are we solving here?
+
+linear programming -> CSPs with continuous variables
+discrete variables
+-> finite  (graph colouring)
+-> infinite domain (scheduling)
+-> binary variables
+
+CSP solving
+
+we have a search graph
+root node is an empty assignment of variables
+children of each node is a single assignment of colouring to one country
+
+DFS - Backtracking Search
+
+- expansion of nodes
+portugal = red, germany= green, france = cyan
+eventually you assigned valid value to each variables
+or current assignment breaks the constraints, so we backtrack
+france = red, germany = green, belgium = cyan, netherlands = y
+
+1. f = c
+2. g = r
+3. b = y
+4. s = g
+5. lx = lx

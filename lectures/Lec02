@@ -1,0 +1,47 @@
+=================================================
+Agents
+=================================================
+
+- be intelligent
+- solve a problem
+- perform a task
+
+- there is a goal that the agent is going to do
+  - utility function (higher = closer to goal, we maximize over time)
+  - actions that the agent performs so they can reach the goal
+
+Reactive Agent
+- respond to the environment as quickly and effective as possible
+- traction control
+- airplane flight control
+  - decide how to move the control surfaces
+  - safety locks as well (can't let pilot flip the control)
+
+Pacman AI
+- cats and mouse
+  - N cats, K cheese bits
+
+- first, check all directions for walls, then remove the walls from viable options now
+- from the viable options
+  - if the cat can't see the mouse pick a random direction
+  - if the cat can see the mouse, pick the direction that the mouse is in (up, down, left, right)
+    - if the mouse is not in cardinal, calculate the further number of tiles vertical or horizontal, move that direction
+
+agent state (what the current properties are)
+
+search state space
+
+cats & mice 4x4 maze
+
+each space could have mouse, cat, cat, cat
+
+mouse | cat | cat | cat
+16 x 16 x 16 x 16 = 65k possible states
+
+=================================================
+search graph
+=================================================
+-nodes are world states
+-edges are connections to other possbile states
+
+a single node can connect to (at most) 4*4*4*4

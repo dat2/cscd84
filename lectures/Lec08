@@ -1,0 +1,58 @@
+Adversarial Games
+brain power
+- zero sum games (win or you lose)
+
+chess, checkers, go, risk, tic tac toe
+
+setup
+initial game configuration (root of tree)
+9 edges to the next configuration, which is the first move
+each configuration has 8 children, where player 2 moves
+9,8,6,7,5,4,3,2,1
+9! is not that big
+
+random moves until the opponent might win, then we pick the move that blocks it
+set ourselves up for a win, pick one of the corners, then pick up one of the corners
+
+BFS complete tree
+step 1:
+record each terminal node / path
+obtain list of all possible games!
+sort it (win, tie, lose)
+
+step 2:
+choose from list a move
+remove from list what player two has blocked off
+
+for tic tac toe, this is trivial however many more games you can't do this for
+introduce a utility function that evaluates partial game config.
+
+tic tac toe
+p1-x trying to win with my program
+p2-0
+
+|o| | |
+|o|x|x|
+|o| | |
+-1 (p1 loses)
+
+| | |x|
+| |x|o|
+|x|o| |
++1 (p1 wins)
+
+tie? 0
+
+game tree, each node gets the max
+
+p1 maximize utility
+p2 minimize utility
+MiniMax
+
+how to get nodes utilities
+
+moves at player 2 turn are the minimum of their children, p2 will choose the minimum
+moves at player 1 turn are the maximum of their children, p1 chooses the maximum
+
+for chess you don't have time to look all the way at the bottom, so you look
+down 4 levels for example

@@ -1,0 +1,40 @@
+=================================================
+AI applications
+=================================================
+
+Robotics
+- Planning (related to pathfinding)
+- Pathfinding (great detail)
+- Localization
+
+Games
+- 2+ players (chess, briefly talk about video games)
+
+Logic
+- Theorem proving
+- Formal Analysis (formal methods, code correctness)
+- Constraint Satisfaction (* these are difficult, so we can only apply heuristics)
+
+Decision Making
+- Expert Systems (top 5 most likely things)
+
+Recommendation Systems
+- what people will like
+
+Classification / Pattern Analysis
+- spam detection
+
+- Being more human (Siri)
+
+=================================================
+Program / Algorithm is an intelligent agent
+
+example agents
+- search engine
+- reactive agent (no planning, analysis, only responds when something happens)
+
+agents
+- perceive / measure / sense the environment
+- acting on the environment
+
+utility function <- maximize utility over time

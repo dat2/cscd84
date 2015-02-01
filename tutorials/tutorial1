@@ -1,0 +1,13 @@
+Tutorial 1:
+Q1: A B C E G D F I M J P K H L O Q R N S T U
+Q2: R
+Q3: A B E M R J P G K H N D C F L O S T U Q I
+Q4: R
+
+Q5:
+expansion: A  C  I  O  S  T  U  B  E  D  H  N  M  R  J  F  G  K  L  P  Q
+cost:           0  1  2   3  4  5  6   2  3   3  5   7   6   8  6  4  5   7  7  8   6
+
+Q6: A,C,I,O,S,T,U
+
+Q7:

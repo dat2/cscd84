@@ -1,0 +1,67 @@
+ordering of vars in CSP
+reduce the amount of search in CSP
+
+1 - fewest values
+2 - one with most constraints
+3 - pick least constraining value
+worst: O(d^n)
+subsets of the domain: O(n/c * d^c), tree? O(nd^2)
+O(d^c * (n - c) * d^2)
+
+problems to big to solve exactly
+n queen problem
+getting n queens into the nxn cheese board without anyone threatening each other
+fairly constrained
+
+lets define a neighbourhood: possible assignments nearby,
+for n queen problem: all configurations where 1 queen is in a different spot
+-work with complete assignments
+-initially can be random
+
+-place queens random row, different column
+local search (also called hill climbing)
+either exhaustively (if possible) or randomly (when not)
+    choose a config that is better, least broken constraints
+    update current config
+    repeat
+
+n queen, operations are move queen along column
+local search solves n queen problem for n ~= 10k in nearly-constant time
+
+hill climbing
+finds a local minimum (or maximum, depending on algorithm), not necessarily optimum
+sample the solution space with k samples, keep best solution
+
+simulated annealing
+look around neighbourhood
+    if better solution found, take it, repeat
+    else accept with probability p proportional -e^(delta T / T)
+
+delta T always (-) for worse solutions
+    cost current - cost proposed (if worst makes cost increase)
+    or
+    cost propsed - cost current (if cost decreases for worst solution)
+
+T is a parameter called temperature (from metallurgy)
+- starts large - decreases over time
+- keep track of best found so far, its likely you will find a bad solution
+
+hill climbing with a willingness to accept bad moves
+
+large enough T + slow enough decreasing T means simulated annealing will alway
+find you optimum
+- whats large enough T + slow enough decreasing? idk
+
+Tabu search
+-always move toward best solution found in neighbourhood
+-move to the best one, even out of all the worst ones
+loops?
+keep a list of recently visited configurations, keep them out of neighbourhood
+
+encourages you to leave local minimum
+continuous variables don't do this
+
+A* -> heuristic -> graph traversal
+   -> estimated distance (manhattan), euclidean
+ -> cost fn: g(n) + h(n)
+ g(n) cost from start

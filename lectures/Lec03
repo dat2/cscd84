@@ -1,0 +1,81 @@
+Agents -> states, goals, actions, sensors
+world state
+
+select a node to expand [from current list of active nodes]
+check for solution
+solution? print path, do work, exit
+else      add all children of expanded node to the active node list in some order
+
+how you select and how you add children to the list are the main differences in searching
+
+DFS
+BFS
+UCS
+A*
+
+BFS
+==========
+expand node
+add children
+go to next node in the list
+FIFO queue
+
+DFS
+==========
+add node
+add children
+expand node, when no children
+go back to next node
+Stack (recursion)
+
+
+active set
+
+while searching, mark visited nodes
+search returns a path from root to the goal
+
+bfs: must build path
+dfs: implicitly in the recursive call stack
+
+how do we know which is better?
+b: branching factor
+m: max depth
+s: depth of closest goal
+
+bfs: b^s
+dfs: b^m
+
+Uniform Cost Search
+expand cheapest node first
+need a cost function
+
+priority queue (heap)
+UCS: dijkstra
+priority queue should allow you to update values
+
+heuristic search
+===============
+i have an active list, some weights associated
+get an estimate for how close some node is from goal
+
+manhattan distance from goal for example |x_Goal - x| + |y_Goal -  y|
+- guaranteed to cost at most ucs work
+- expands less nodes in general
+
+a*
+- heuristic search
+- compute cost of a node (from the active list) as
+
+f(n) = g(n) + h(n)
+f: cost
+g: cost to get to n from start
+h: heuristic estimate to goal, gives you muscle
+
+h(n) must have certain properties to guarantee that f is optimal
+
+admissable heuristic
+-h(n) <= h*(n) (true cost to get to goal from n)
+
+[h(n) = 0] => UCS
+h(n) = 0 is admissable
+true cost h*(n) is admissable

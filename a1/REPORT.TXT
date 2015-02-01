@@ -1,0 +1,172 @@
+CSC D84 - Artificial Intelligence, Winter 2014
+
+Assignment 1 - Search
+
+This assignment is worth:
+
+10 AIUs (Artificial Intelligence Units)
+toward the 40% assignment component of your final
+mark.
+
+________________________________________________
+
+Student Name (last, first): Dujay, Nicholas
+
+Student number: 999194900
+
+UTORid: dujaynic
+
+READ THIS AND SIGN YOUR NAME AT THE END:
+
+ I certify that I have read the UTSC code on academic
+honesty and plaguarism. All work submitted as part
+of this assignment is my own.
+
+	Signed: _ Nicholas Dujay __
+
+
+(-5 marks for failing to provide the identifying
+ information requested above)
+________________________________________________
+
+Answer the following questions. Be concise and clear
+but explain carefully when needed.
+
+
+1 .- (1 marks) Of BFS and DFS, which search algorithm yields
+     the best results? (i.e. which is more likely
+     to get the mouse to the cheese safely before
+     being eaten?)
+
+Seed: 37653
+Cats: 5
+Cheese: 5
++----------------------+------+------------+-------------+
+|      Algorithm       | Wins | Total Runs | Probability |
++----------------------+------+------------+-------------+
+| BFS                  |   10 |         10 | 100%        |
+| DFS                  |    0 |         10 | 0%          |
++----------------------+------+------------+-------------+
+
+According to the data, BFS is much more likely to get the mouse safely to the
+cheese.
+
+2 .- (1 marks) Does this mean that in general BFS is a better
+     search algorithm? (yes/no and give reasons to
+     support your answer based on your observations)
+
+Not necessarily. You can make some optimizations to DFS that would make it
+better in general than BFS, such as changing the order you expand nodes based on
+the direction of your goal. This would cause DFS to almost always be better than
+BFS, as it does not expand any nodes behind it.
+
+3 .- (2 marks) Describe the heuristic function you used for
+     A* search. Why is this heuristic admissible?
+
+The heuristic function is simply the manhattan distance between the node and the
+closest cheese. This is admissible because the best path to the cheese is as
+long as the manhattan distance, and every other path is longer than manhattan
+distance.
+
+4 .- (1 marks) Explain how your heuristic function accounts for
+     the presence of multiple cheeses.
+
+The heuristic function assigns the node the cost of the closest cheese. Because
+of this, A* will select the nodes that have closer cheeses.
+
+5 .- (1 marks) Is A* equivalent to BFS for this problem? or is
+     it better/worse? explain your answer based on
+     your observations.
+
+When I was first testing my A* function, I had not created my heuristic function
+yet. When I got the A* algorithm working, I noticed that it had performed the
+equivalent of a BFS. Once I implemented my heuristic function, A* became much
+more optimal.
+
+To answer the question, A* is better than BFS because the heuristic function
+gives you a stronger intuition of which path to take. BFS has no intuition and
+must treat all paths as equally possible from the start node.
+
+6 .- (2 marks) Describe your heuristic function for A*-nokitty.
+     How does it work? what factors are considered
+     into the cost function? is it admissible?
+
+My A*-nokitty heuristic function is not admissible. The true cost of moving to a
+position near a cat is much less than what my heuristic function calculates.
+
+My A*-nokitty heuristic function takes three main factors into consideration:
+distance of the closest cheese, distance of the closest cat, and the number of
+cats within a radius of the node. Nodes that are further from the cheese cost
+more, nodes that have a cat closer cost more (exponentially) and nodes that have
+more cats near it exponentially increase the cost as well. However, nodes that
+have a cheese directly adjacent to them cost near 0, making the A* attracted to
+the cheese like a magnet.
+
+7 .- (2 marks) What is the largest limitation of the search
+     algorithms implemented in this assignment?
+     (i.e. is there anything we are missing that
+      could lead to a smarter mouse?) - this is
+     a more or less open question, but we talked
+     about it in lecture!
+
+The red cheese is the biggest limitation. When the mouse eats the red cheese,
+the mouse becomes invincible yet we have no way of detecting this. If we can
+detect this then we could swap out the A*-nokitty heuristic with a different
+heuristic that takes advantage of this.
+
+Eg. eating the cats to make future searching easier, or going directly towards
+the cheese without caring about the cats.
+_____________________________________________________
+
+Mark with an 'x' where appropriate. If something is only
+working partially, briefly describe what works, what
+doesn't work, or what problems exist.
+
+	Complete/Working	Partial		Not done
+
+DFS      x
+
+BFS      x
+
+A*       x
+
+A*NK     x
+
+_____________________________________________________
+
+Marking:
+
+(5 marks) Correctly implementing BFS - the search
+          runs and produces the expected search
+          behaviour.
+
+(5 marks) Correctly implementing DFS - the search
+          runs and produces the expected behaviour.
+
+(5 marks)  A* cost function is implemented, reasonable,
+           and admissible.
+
+(10 marks) Correctly implementing A* search - the search
+           runs and produces the expected behaviour.
+
+(10 marks) Implemented a **clever**  A*-nokitty heuristic
+           and a working A*-nokitty search. The search
+           should produce a smarter mouse than all of
+           BFS/DFS/vanilla A*.
+
+           The heuristic should accounts for known game
+           factors that affect the mouse's chance of success.
+
+           (to be marked competitively - smartest mouse
+            in the class earns full marks)
+
+(10 marks) Answers in this report file
+
+(up to 15 marks) Assigned by the TA based on how smart your
+		 mouse actually is. Mind what is going on in
+		 the game, and think about how to make your
+		 mouse most likely to win!
+
+Total for A1:       / out of 60
+
+
