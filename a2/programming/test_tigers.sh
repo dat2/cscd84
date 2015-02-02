@@ -1,4 +1,3 @@
 #!/bin/bash
 
-python TigersAndPeople_starter.py
-
+python -u TigersAndPeople_starter.py

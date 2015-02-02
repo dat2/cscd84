@@ -16,7 +16,9 @@
 # Starter: F.J.E. Dec. 2014
 ###################################################################
 from random import *        # I apologize, but not too much
+
 import sys
+done = False
 
 class chalupa:
     """
@@ -251,19 +253,150 @@ def SearchForPlan(some_plan,Left,Right,Boat,Backup):
     ##  choice in the report.
     ###############################################################################
 
-    some_plan.append([cross, []])
-#       If you need to see what your code is doing, you should print the plan!
-    print "DEBUG: ***** "
-    print "Current plan:"
-    print some_plan
+    global done
 
-    # Below is an example of how to run input plan
-    x=RunPlan(some_plan,Left,Right,Boat,Backup)
-    print x
-#   if x!=0:
-#       # Failed or succeeded - do something about it
-#   else:
-#       # Safe configuration - do something different about it
+    def test_plan(plan):
+        return RunPlan(plan, Left, Right, Boat, Backup)
+
+    def print_plan(plan):
+        print "Current plan:"
+        print map(lambda (func, args): [func.__name__, args], plan)
+
+    def print_state():
+        print 'Left:', Left_Side
+        print 'Right:', Right_Side
+        print 'Boat:', Boat.contents, 'side:', 'Right' if Boat.side else 'Left'
+
+    def is_last_move(move):
+        return some_plan[-1][0] == move
+
+    def is_second_last_move(move):
+        return some_plan[-2][0] == move
+
+    def get_last_moves():
+        return [func.__name__ for (func,_) in some_plan]
+
+    def is_safe(plan):
+        result = test_plan(plan)
+        if result == 1:
+            global done
+            done = True
+        return result == 0 or result == 1
+
+    def try_cross():
+        if is_last_move(cross):
+            return False
+        # print 'Trying to cross'
+
+        new_plan = some_plan[:]
+        new_plan.append([cross, []])
+
+        if is_safe(new_plan):
+            some_plan.append([cross, []])
+            return True
+        return False
+
+    def try_swap():
+        if is_last_move(swap_type) and is_second_last_move(swap_type):
+            return False
+        # print 'Trying to swap'
+
+        new_plan = some_plan[:]
+        new_plan.append([swap_type, 'T'])
+
+        if is_safe(new_plan):
+            some_plan.append([swap_type, 'T'])
+            return True
+        else:
+            new_plan.pop()
+            new_plan.append([swap_type, 'P'])
+            if is_safe(new_plan):
+                some_plan.append([swap_type, 'P'])
+                return True
+        return False
+
+    def try_unload():
+        # only unload on the right side
+        if not Boat.side:
+            return False
+        # print 'Trying to unload'
+
+        new_plan = some_plan[:]
+        new_plan.append([unload_type, 'T'])
+
+        if is_safe(new_plan):
+            some_plan.append([unload_type, 'T'])
+            return True
+        else:
+            if len(Left_Side) == 0:
+                new_plan.pop()
+                new_plan.append([unload_type, 'P'])
+                if is_safe(new_plan):
+                    some_plan.append([unload_type, 'P'])
+                    return True
+
+        return False
+
+    def try_load():
+        # only on the left side
+        if Boat.side:
+            return False
+        # print 'Trying to load'
+
+        new_plan = some_plan[:]
+        new_plan.append([load_type, 'T'])
+
+        if is_safe(new_plan):
+            some_plan.append([load_type, 'T'])
+
+            return True
+        else:
+            new_plan.pop()
+            new_plan.append([load_type, 'P'])
+
+            if is_safe(new_plan):
+                some_plan.append([load_type, 'P'])
+                return True
+        return False
+
+
+    # cheating a bit here, in the very beginning load everything so we don't have
+    # an empty list
+    some_plan.append([load_type, 'T'])
+    some_plan.append([load_type, 'P'])
+    new_plan = some_plan[:]
+
+    while not done:
+        #print '=================================================================='
+        #print 'Last moves', get_last_moves()
+        #print_state()
+
+        # the big if block here is to try to unload first
+        # then cross, if unloading failed
+        # then load, if crossing failed
+        # then swap, if loading failed
+        if try_unload():
+            pass
+            #print 'Unloaded'
+        elif try_cross():
+            pass
+            #print 'Crossed'
+        elif try_load():
+            pass
+            #print 'Loaded'
+        elif try_swap():
+            pass
+            #print 'Swapped'
+        else:
+            # pass
+            print 'Couldn\'t pick anything!'
+            done = True
+
+        #print_state()
+        if not done:
+            done = test_plan(some_plan) == 1
+        #print '=================================================================='
+
 
     return 1  # You will need to change this of course - somehow.
 
@@ -308,7 +441,7 @@ if __name__=="__main__":
     tries=0
     Boat=chalupa()
 
-    initialize_game(1,1,Left_Side)  # <-- Your solution should work with 3 tigers, 3 people!
+    initialize_game(3,2,Left_Side)  # <-- Your solution should work with 3 tigers, 3 people!
     Left_Backup=list(Left_Side) # <-- I could re-initialize, but why not just make a copy?
 
     plan=list() # Here! I'm giving you an empty plan! Am I Not Merciful?
@@ -327,9 +460,9 @@ if __name__=="__main__":
         else:
             plan[i][0](plan[i][1],Left_Side,Right_Side,Boat)
         if Boat.side==0:
-            print Left_Side,"   ",Boat.contents,"           ",Right_Side
+            print Left_Side,"\t",Boat.contents,"\t\t",Right_Side
         else:
-            print Left_Side,"           ",Boat.contents,"   ",Right_Side
+            print Left_Side,"\t\t",Boat.contents,"\t",Right_Side
 
     print "Done!"
 
