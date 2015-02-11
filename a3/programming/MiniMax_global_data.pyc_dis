@@ -1,0 +1,13 @@
+from numpy import *
+t_cnt = 0
+search_END = 0
+SearchType = 0
+msx = 32
+msy = 32
+A = zeros(shape=(msx * msy, 4))
+Maze = zeros(shape=(msx, msy))
+Max_Search_Depth = 0
+Ncats = 0
+Ncheese = 0
+GameState = []
+

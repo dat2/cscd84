@@ -1,0 +1,163 @@
+CSC D84 - Artificial Intelligence, Winter 2015
+
+Assignment 3 - MiniMax and Game Trees
+
+This assignment is worth:
+
+10 AIUs (Artificial Intelligence Units)
+toward the 35% assignment component of your final
+mark.
+
+________________________________________________
+
+Student Name (last, first): Dujay, Nicholas
+
+Student number: 999194900
+
+UTORid: dujaynic
+
+READ THIS AND SIGN YOUR NAME AT THE END:
+
+ I certify that I have read the UTSC code on academic
+honesty and plaguarism. All work submitted as part
+of this assignment is my own.
+
+	Signed: _Nicholas Dujay__
+
+
+(-5 marks for failing to provide the identifying
+ information requested above)
+________________________________________________
+
+Answer the following questions. Be concise and clear
+but explain carefully when needed.
+
+1 .- (5 marks) Explain the design of your utility function.
+     Describe all the factors that influence its value, and
+     how their influence was evaluated and integrated into
+     a single, meaningful value. Convince us that your utility
+     makes sense!
+
+There are two main features that affect the utility value I return:
+(All distances are calculated using manhattan distance)
+1. The distance of the closest cheese
+2. The number of cats near (within 8 blocks) to the mouse
+
+The distance of the closest cheese adds positively to the utility.
+The number of cats near the mouse adds negatively to the utility, and scales
+linearly.
+
+There are two minor optimizations:
+1. game states where the mouse is eating the cheese is given an arbitrarily high
+   utility, overriding the calculated utility.
+2. game states where the mouse is getting eaten by the cat is given an
+   arbitrarily low utility, overriding the calculated utility.
+
+This works quite well as it makes the mouse highly attracted to the cheese while
+trying to avoid the cats.
+
+2 .- (2 marks) Ignoring computation time, what is the effect of
+     search depth (number of turns) on the chances of the mouse
+     winning the game.
+
+The mouse will win the game more often given more turns always. The more the
+mouse can see into the future, the mouse will find better and better paths
+through the search tree.
+
+3 .- (2 marks) What situations will cause your mouse to lose?
+     can these be fixed either with the utility function, or
+     by changing the search depth? if so, how?
+
+When my mouse gets stuck in a loop switching between two spots.
+
+Since the utility function uses manhattan distance, a position directly above
+and directly beside the mouse will have the same manhattan distance to the
+nearest cheese, the mouse can not decide which is better. Therefore I made the
+mouse choose a random position at the end of the Minimax search function.
+This problem can be solved by using a more accurate representation of the
+"true" (taking the maze into account) distance from a position to the cheese.
+Changing the search depth does not fix this particular issue though.
+
+Another issue is that my mouse can set itself up for a trap. The mouse will try
+to avoid cats that are within 8 blocks of itself. However, if the cats are far
+enough apart then the mouse will run from one cat, towards another, towards
+another, and then the mouse will inevitable attract all the cats toward itself
+and the mouse will not be able to escape this.
+
+4 .- (2 marks) Does the utility function favour the mouse?
+     (yes/no, and a reasonable explanation of why)
+
+Yes. The mouse will be attracted to the cheese, while avoiding the cats as much
+as possible. The FEAR_FACTOR variable tells you how "brave" the mouse is when
+considering a move near a cat. The cats are choosing the opposite moves that the
+mouse is choosing if the mouse were positioned at that particular cat's position,
+which means that the utility function is useless for the cats since they are
+not going to be chasing the mouse at all.
+
+5 .- (2 marks) Can the mouse be made unbeatable by having an
+     optimal utility function?
+
+Without enough search depth, an optimal utility function can not possibly guess
+the utility for a certain game state very well. For example, if you had a search
+depth of 2, you only know the next 2 moves ahead but you could in fact be setting
+yourself up for a trap, surrounding yourself with cats around you. With a larger
+search depth, you could predict these traps better.
+
+6 .- (2 bonus marks) Could a human playing the game in place
+      of the mouse do better than your code? (yes, no, and
+      a reasonable explanation of why)
+
+A human can definitely do better since they would always be choosing the safest
+yet most efficient path to the nearest cheese that is not cat surrounded. Humans
+can also get themselves out of a "hairy" situation with many cats nearby (given
+enough training of course). Humans also have a much greater search depth with a
+much more efficent pruning technique, allowing them to search much less of the
+map and getting the best path most of the time.
+
+_____________________________________________________
+
+Mark with an 'x' where appropriate. If something is only
+working partially, briefly describe what works, what
+doesn't work, or what problems exist.
+
+        Complete/working        Partial         Not done
+
+Utility        X
+ function
+
+MiniMax        X
+
+Alpha/Beta     X
+ pruning
+_____________________________________________________
+
+Marking:
+
+(10 marks) Implemented a non-trivial, clever, and
+           effective utility function. It allows the
+           mouse to win the game often. This will be
+           marked **competitively**. The best utility
+           function will get full marks.
+
+(10 marks) Correctly implementing MiniMax. The algorithm
+           should produce the expected behaviour. The
+           mouse should take a reasonable path to the
+           cheese and avoid cats. The cats will try to
+           catch the mouse. Mouse is not easy to catch.
+
+(10 marks) Implemented alpha-beta pruning. The algorithm
+           significantly reduces the amount of search
+           while producing identical results as those
+           from standard MiniMax
+
+(15 marks) Competitive (TA assigned) based on how smart
+           your mouse is (this is related to your
+           utility function above!)
+
+(15 marks) Answers in this report file
+
+(2 bonus)  Bonus!
+
+Total for A3:       / out of 60
+
+

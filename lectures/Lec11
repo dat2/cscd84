@@ -1,0 +1,41 @@
+alpha beta pruning
+
+max - update alpha
+    - prune beta
+
+min - update beta
+    - prune alpha
+
+how about games with chance?
+- dice
+- random behaviour
+- noise
+- unknown opponent utility
+instead of utility, expected utility
+
+move vs random cat
+max
+
+V = (.25 * -3) + (.25 * 5) + (.25 * 0) + (.25 * -2)
+if the player moves 25% of the time between 4 nodes, each with the costs -3,5,0,-2
+
+expecti-minimax
+current config
+p1 choice
+
+no more search
+5.5 weeks/12
+
+- search
+- heuristic search
+- local search
+- simulated annealing
+- minimax
+
+================================================================================
+reinforcement learning
+================================================================================
+
+take an action, give a reward for agent, give punishment if bad
+agent learns eventually which are good and which are bad
+

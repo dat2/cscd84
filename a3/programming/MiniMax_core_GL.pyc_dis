@@ -1,0 +1,513 @@
+import ImageDraw
+import time
+from random import *
+from Image import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+from numpy import *
+import MiniMax_global_data
+from MiniMax_search import MiniMax_search
+catNip = []
+Mouse = []
+Cats = []
+Cheese = []
+winID = 0
+canvas = new('RGB', [1024, 1024])
+maze = new('RGB', [1024, 1024])
+nLoops = 1200
+mousyIm = open('mousy.ppm')
+cheeseIm = open('cheesy.ppm')
+catIm = open('kitty.ppm')
+
+def renderMaze(R, G, B):
+    global maze
+    draw = ImageDraw.Draw(maze)
+    for i in range(MiniMax_global_data.msx):
+        for j in range(MiniMax_global_data.msy):
+            x1 = i * MiniMax_global_data.msx
+            y1 = j * MiniMax_global_data.msy
+            x2 = (i + 1) * MiniMax_global_data.msx - 1
+            y2 = (j + 1) * MiniMax_global_data.msy - 1
+            if MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][0] == 0:
+                draw.line((x1,
+                 y1,
+                 x2,
+                 y1), fill=(R, G, B))
+            if MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][1] == 0:
+                draw.line((x2,
+                 y1,
+                 x2,
+                 y2), fill=(R, G, B))
+            if MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][2] == 0:
+                draw.line((x1,
+                 y2,
+                 x2,
+                 y2), fill=(R, G, B))
+            if MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][3] == 0:
+                draw.line((x1,
+                 y1,
+                 x1,
+                 y2), fill=(R, G, B))
+
+
+    del draw
+
+
+
+def renderAgents():
+    global Cheese
+    global canvas
+    global Cats
+    global cheeseIm
+    global mousyIm
+    global Mouse
+    global catIm
+    canvas = maze.copy()
+    draw = ImageDraw.Draw(canvas)
+    mx = MiniMax_global_data.Maze.max()
+    if mx == 0:
+        mx = 0.0001
+    mi = MiniMax_global_data.Maze.min()
+    if mx > 0:
+        for i in range(MiniMax_global_data.msx):
+            for j in range(MiniMax_global_data.msy):
+                if MiniMax_global_data.Maze[i][j] != 0:
+                    x1 = i * MiniMax_global_data.msx + 3
+                    y1 = j * MiniMax_global_data.msy + 3
+                    x2 = (i + 1) * MiniMax_global_data.msx - 4
+                    y2 = (j + 1) * MiniMax_global_data.msy - 4
+                    g_col = (MiniMax_global_data.Maze[i][j] - mi) / (mx - mi)
+                    r_col = int((1.0 - g_col) * 192)
+                    g_col = int(g_col * 192)
+                    draw.rectangle((x1,
+                     y1,
+                     x2,
+                     y2), fill=(r_col, g_col, 15))
+
+
+    for i in range(MiniMax_global_data.Ncheese):
+        x = MiniMax_global_data.msx * Cheese[i][0] + 1
+        y = MiniMax_global_data.msy * Cheese[i][1] + 1
+        (sx, sy,) = cheeseIm.size
+        canvas.paste(cheeseIm, (x,
+         y,
+         x + sx,
+         y + sy))
+
+    for i in range(MiniMax_global_data.Ncats):
+        x = MiniMax_global_data.msx * Cats[i][0] + 1
+        y = MiniMax_global_data.msy * Cats[i][1] + 1
+        (sx, sy,) = catIm.size
+        canvas.paste(catIm, (x,
+         y,
+         x + sx,
+         y + sy))
+
+    x = MiniMax_global_data.msx * Mouse[0][0] + 1
+    y = MiniMax_global_data.msy * Mouse[0][1] + 1
+    (sx, sy,) = mousyIm.size
+    canvas.paste(mousyIm, (x,
+     y,
+     x + sx,
+     y + sy))
+    del draw
+
+
+
+def endGame(flag):
+    flip = 0
+    for i in range(10):
+        if flag == 0:
+            if flip == 0:
+                renderMaze(255, 0, 0)
+                flip = 1
+            else:
+                renderMaze(0, 0, 255)
+                flip = 0
+        elif flip == 0:
+            renderMaze(0, 255, 0)
+            flip = 1
+        else:
+            renderMaze(0, 0, 255)
+            flip = 0
+        renderAgents()
+        UpdateFrame()
+        time.sleep(0.25)
+
+
+
+
+def initGame(seedNo, n_cats, n_cheese):
+    global catNip
+    global nLoops
+    random.seed(seedNo)
+    MiniMax_global_data.Ncats = n_cats
+    for i in range(MiniMax_global_data.Ncats):
+        Cats.append([0, 0])
+        catNip.append(-1)
+
+    MiniMax_global_data.Ncheese = n_cheese
+    for i in range(MiniMax_global_data.Ncheese):
+        Cheese.append([0, 0])
+
+    for i in range(MiniMax_global_data.msx):
+        for j in range(MiniMax_global_data.msy):
+            for k in range(4):
+                MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][k] = random.random()
+
+
+
+    flags = zeros(shape=(MiniMax_global_data.msx * MiniMax_global_data.msy, 1))
+    flags[0] = 1
+    MST = zeros(shape=(MiniMax_global_data.msx * MiniMax_global_data.msy, 4))
+    print 'Creating maze\n'
+    done = 0
+    while not done:
+        min = 10000
+        minX = -1
+        minY = -1
+        minI = -1
+        minJ = -1
+        minK = -1
+        done = 1
+        for i in range(MiniMax_global_data.msx):
+            for j in range(MiniMax_global_data.msy):
+                if flags[(i + j * MiniMax_global_data.msx)] == 1:
+                    for k in range(4):
+                        if MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][k] < min:
+                            if k == 0:
+                                idx = i
+                                idy = j - 1
+                            elif k == 1:
+                                idx = i + 1
+                                idy = j
+                            elif k == 2:
+                                idx = i
+                                idy = j + 1
+                            else:
+                                idx = i - 1
+                                idy = j
+                            if idx >= 0 and idx < MiniMax_global_data.msx and idy >= 0 and idy < MiniMax_global_data.msy:
+                                if flags[(idx + idy * MiniMax_global_data.msx)] == 0:
+                                    min = MiniMax_global_data.A[(i + j * MiniMax_global_data.msx)][k]
+                                    minX = idx
+                                    minY = idy
+                                    minI = i
+                                    minJ = j
+                                    minK = k
+                                    done = 0
+
+
+
+        if done == 0 and min < 10000 and minX != -1 and minY != -1 and minI != -1 and minJ != -1:
+            flags[minX + minY * MiniMax_global_data.msx] = 1
+            MST[(minI + minJ * MiniMax_global_data.msx)][minK] = 1
+            if minK == 0:
+                MST[(minX + minY * MiniMax_global_data.msx)][2] = 1
+            elif minK == 1:
+                MST[(minX + minY * MiniMax_global_data.msx)][3] = 1
+            else:
+                if minK == 2:
+                    MST[(minX + minY * MiniMax_global_data.msx)][0] = 1
+                else:
+                    MST[(minX + minY * MiniMax_global_data.msx)][1] = 1
+
+    for i in range(nLoops):
+        idx = random.randint(1, MiniMax_global_data.msx - 1)
+        idy = random.randint(1, MiniMax_global_data.msy - 1)
+        ngh = random.randint(0, 3)
+        MST[(idx + idy * MiniMax_global_data.msx)][ngh] = 1
+        if ngh == 0:
+            idy = idy - 1
+            ngh = 2
+        elif ngh == 1:
+            idx = idx + 1
+            ngh = 3
+        elif ngh == 2:
+            idy = idy + 1
+            ngh = 0
+        else:
+            idx = idx - 1
+            ngh = 1
+        if idx >= 0 and idx < MiniMax_global_data.msx and idy >= 0 and idy < MiniMax_global_data.msy:
+            MST[(idx + idy * MiniMax_global_data.msx)][ngh] = 1
+
+    for i in range(MiniMax_global_data.msx * MiniMax_global_data.msy):
+        for j in range(4):
+            MiniMax_global_data.A[i][j] = MST[i][j]
+
+
+    print 'Done maze!\n'
+    print 'Setting up initial agent positions\n'
+    print 'Cheese at:\n'
+    for i in range(MiniMax_global_data.Ncheese):
+        done = 0
+        while not done:
+            done = 1
+            ii = random.randint(MiniMax_global_data.msx)
+            jj = random.randint(MiniMax_global_data.msy)
+            for j in range(i):
+                if Cheese[j][0] == ii and Cheese[j][1] == jj:
+                    done = 0
+
+            if done:
+                Cheese[i][0] = ii
+                Cheese[i][1] = jj
+                print Cheese[i]
+
+
+    print 'Cats at:\n'
+    for i in range(MiniMax_global_data.Ncats):
+        done = 0
+        while not done:
+            done = 1
+            ii = random.randint(MiniMax_global_data.msx)
+            jj = random.randint(MiniMax_global_data.msy)
+            for j in range(i):
+                if Cats[j][0] == ii and Cats[j][1] == jj:
+                    done = 0
+
+            for j in range(MiniMax_global_data.Ncheese):
+                if Cheese[j][0] == ii and Cheese[j][1] == jj:
+                    done = 0
+
+            if done:
+                Cats[i][0] = ii
+                Cats[i][1] = jj
+                print Cats[i]
+
+
+    print 'Initial mouse location:\n'
+    done = 0
+    while not done:
+        done = 1
+        ii = random.randint(MiniMax_global_data.msx)
+        jj = random.randint(MiniMax_global_data.msy)
+        for j in range(MiniMax_global_data.Ncats):
+            if Cats[j][0] == ii and Cats[j][1] == jj:
+                done = 0
+
+        for j in range(MiniMax_global_data.Ncheese):
+            if Cheese[j][0] == ii and Cheese[j][1] == jj:
+                done = 0
+
+        if done:
+            Mouse.append([ii, jj])
+
+    print Mouse[0]
+
+
+
+def initWindow(title):
+    global winID
+    sarg = 'Dummy!'
+    carg = 1
+    glutInit(carg, sarg)
+    glutInitWindowPosition(25, 25)
+    glutInitWindowSize(640, 640)
+    winID = glutCreateWindow(title)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutReshapeFunc(WindowReshape)
+    glutDisplayFunc(MainLoop)
+    glutKeyboardFunc(kbHandler)
+
+
+
+def WindowReshape(w, h):
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluOrtho2D(0, 800, 800, 0)
+    glViewport(0, 0, w, h)
+
+
+
+def kbHandler(key, x, y):
+    if key == 'q':
+        exit(0)
+
+
+
+def UpdateFrame():
+    tsx = canvas.size[0]
+    tsy = canvas.size[1]
+    texImage = canvas.convert('RGB')
+    texImage = canvas.tostring('raw', 'RGB')
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glEnable(GL_TEXTURE_2D)
+    glDisable(GL_LIGHTING)
+    texture = glGenTextures(1)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    glBindTexture(GL_TEXTURE_2D, texture)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tsx, tsy, 0, GL_RGB, GL_UNSIGNED_BYTE, texImage)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(0.0, 0.0, 0.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(800.0, 0.0, 0.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(800.0, 800.0, 0.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(0.0, 800.0, 0.0)
+    glEnd()
+    glFlush()
+    glutSwapBuffers()
+    glutSetWindow(winID)
+    glutPostRedisplay()
+    glDeleteTextures(texture)
+
+
+
+def CatMoves(ncat):
+    (x, y,) = Cats[ncat]
+    dr = random.random()
+    if dr <= 0.9:
+        if catNip[ncat] == 0:
+            if y > 0 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][0] == 1:
+                move = [x, y - 1]
+                return move
+        if catNip[ncat] == 1:
+            if x < MiniMax_global_data.msx - 1 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][1] == 1:
+                move = [x + 1, y]
+                return move
+        if catNip[ncat] == 2:
+            if y < MiniMax_global_data.msy - 1 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][2] == 1:
+                move = [x, y + 1]
+                return move
+        if catNip[ncat] == 3:
+            if x > 0 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][3] == 1:
+                move = [x - 1, y]
+                return move
+    done = 0
+    while done == 0:
+        d = random.random()
+        if d <= 0.5:
+            if x > Mouse[0][0] and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][3] == 1:
+                catNip[ncat] = 3
+                move = [x - 1, y]
+                done = 1
+            elif x < Mouse[0][0] and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][1] == 1:
+                catNip[ncat] = 1
+                move = [x + 1, y]
+                done = 1
+            elif y > Mouse[0][1] and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][0] == 1:
+                catNip[ncat] = 0
+                move = [x, y - 1]
+                done = 1
+            else:
+                if y < Mouse[0][1] and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][2] == 1:
+                    catNip[ncat] = 2
+                    move = [x, y + 1]
+                    done = 1
+                else:
+                    done = 0
+        else:
+            d = randint(0, 3)
+            if d == 0 and y > 0 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][0] == 1:
+                catNip[ncat] = 0
+                move = [x, y - 1]
+                done = 1
+            if d == 1 and x < MiniMax_global_data.msx - 1 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][1] == 1:
+                catNip[ncat] = 1
+                move = [x + 1, y]
+                done = 1
+            if d == 2 and y < MiniMax_global_data.msy - 1 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][2] == 1:
+                catNip[ncat] = 2
+                move = [x, y + 1]
+                done = 1
+            if d == 3 and x > 0 and MiniMax_global_data.A[(x + y * MiniMax_global_data.msx)][3] == 1:
+                catNip[ncat] = 3
+                move = [x - 1, y]
+                done = 1
+
+    return move
+
+
+
+def MainLoop():
+    UpdateFrame()
+    print 'Mouse and Cats are thinking...'
+    MiniMax_global_data.t_cnt = 0
+    MiniMax_global_data.Maze = zeros(shape=(MiniMax_global_data.msx, MiniMax_global_data.msy))
+    (tpl, u,) = MiniMax_search(MiniMax_global_data.GameState, 0, 0, -10000000.0, 10000000.0)
+    print 'Expanded ',
+    print MiniMax_global_data.t_cnt,
+    print ' nodes for this call\n'
+    Agent_paths = []
+    for i in range(MiniMax_global_data.Ncats + 1):
+        pth = []
+        idx = i + 1
+        while idx < len(tpl):
+            pth.append(tpl[idx][i])
+            idx += 2
+
+        Agent_paths.append(pth)
+
+    for mv in range(len(Agent_paths[0])):
+        Mouse[0] = Agent_paths[0][mv]
+        MiniMax_global_data.GameState[0] = Mouse[0]
+        for i in range(MiniMax_global_data.Ncats):
+            if MiniMax_global_data.SearchType == 0:
+                (x, y,) = CatMoves(i)
+                Cats[i] = [x, y]
+                MiniMax_global_data.GameState[i + 1] = [x, y]
+            elif mv < len(Agent_paths[(i + 1)]):
+                Cats[i] = Agent_paths[(i + 1)][mv]
+                MiniMax_global_data.GameState[i + 1] = Cats[i]
+
+        for i in range(MiniMax_global_data.Ncats):
+            if Cats[i] == Mouse[0]:
+                print 'Mouse has been eaten!'
+                endGame(0)
+                exit(0)
+
+        for i in range(MiniMax_global_data.Ncats):
+            if Cats[i] == Mouse[0]:
+                print 'Mouse has been eaten!'
+                endGame(0)
+                exit(0)
+
+        for i in range(MiniMax_global_data.Ncheese):
+            if Cheese[i] == Mouse[0]:
+                print 'Cheese has been eaten!'
+                Cheese.pop(i)
+                MiniMax_global_data.Ncheese = MiniMax_global_data.Ncheese - 1
+                MiniMax_global_data.GameState = []
+                MiniMax_global_data.GameState = Mouse + Cats + Cheese
+                break
+
+        if len(Cheese) == 0:
+            print 'Mouse ate all the cheese. Mouse wins!'
+            endGame(1)
+            exit(0)
+        renderAgents()
+        UpdateFrame()
+        time.sleep(0.25)
+
+
+
+
+def doSearch(search_type, max_depth):
+    if MiniMax_global_data.Ncats == 0 or MiniMax_global_data.Ncheese == 0:
+        print 'Must call initGame() first!'
+        exit(0)
+    MiniMax_global_data.SearchType = search_type
+    if MiniMax_global_data.SearchType > 2:
+        MiniMax_global_data.SearchType = 0
+    MiniMax_global_data.GameState = Mouse + Cats + Cheese
+    MiniMax_global_data.search_END = max_depth * (1 + MiniMax_global_data.Ncats)
+    renderMaze(0, 0, 255)
+    renderAgents()
+    initWindow("Mouse vs. Kitties v2.2, F.J.E. '14")
+    glutMainLoop()
+
+
+

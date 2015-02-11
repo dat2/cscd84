@@ -1,0 +1,38 @@
+Adversarial Game playing
+
+setup - graph - each level is made of possible moves by 1 player
+      - utility function, gvies the goodness of a partial configuration
+        - (+) for player 1, (-) for player 2
+
+minimax, p1 - max utility, p2 - minimize utility
+
+max search depth or terminal node
+- scan a few levels down and pick the best one
+utility is uncertain
+in the beginning its not okay
+
+during game
+1. determine if current node is min or max
+2. search successors of nodes up to max depth
+- apply utility function to leaf nodes
+                    (terminal or max depth search)
+- back up tree, choosing min or max utility given the node type
+  - (you know the enemy is going to choose the worst node, so you have to
+     assume thats going to happen)
+
+utility fn
+how do we approximate this given partial configuration
+- find a good set of features that we can measure
+- combine into utility function
+sum_{i=1}^{n} weight_{i} * f_i(config)
+
+for chess
+f(x) = 200(k - k') + 9(q- q') + 5(r - r') + 3(b - b' + n - n') + 1(p - p') + extra
+
+k = white kings
+k' = black kings
+you count the difference between chess pieces and weight them
+
+this takes too long
+idea -> some path are quickly found to be not promising
+consider what node above knows so far
