@@ -44,7 +44,7 @@ There are two main features that affect the utility value I return:
 2. The number of cats near (within 8 blocks) to the mouse
 
 The distance of the closest cheese adds positively to the utility.
-The number of cats near the mouse adds negatively to the utility, and scales
+The number of cats near the mouse adds negatively to the utility which scales
 linearly.
 
 There are two minor optimizations:
@@ -60,7 +60,7 @@ trying to avoid the cats.
      search depth (number of turns) on the chances of the mouse
      winning the game.
 
-The mouse will win the game more often given more turns always. The more the
+The mouse will always win the game more often given more turns. The more the
 mouse can see into the future, the mouse will find better and better paths
 through the search tree.
 
@@ -88,11 +88,9 @@ and the mouse will not be able to escape this.
      (yes/no, and a reasonable explanation of why)
 
 Yes. The mouse will be attracted to the cheese, while avoiding the cats as much
-as possible. The FEAR_FACTOR variable tells you how "brave" the mouse is when
-considering a move near a cat. The cats are choosing the opposite moves that the
-mouse is choosing if the mouse were positioned at that particular cat's position,
-which means that the utility function is useless for the cats since they are
-not going to be chasing the mouse at all.
+as possible. The FEAR_FACTOR variable tells you how "brave" the mouse is, when
+considering a move near a cat. The game states that are closer to the cheese get
+higher and higher utility while game states near cats get lower and lower utility.
 
 5 .- (2 marks) Can the mouse be made unbeatable by having an
      optimal utility function?
@@ -100,8 +98,7 @@ not going to be chasing the mouse at all.
 Without enough search depth, an optimal utility function can not possibly guess
 the utility for a certain game state very well. For example, if you had a search
 depth of 2, you only know the next 2 moves ahead but you could in fact be setting
-yourself up for a trap, surrounding yourself with cats around you. With a larger
-search depth, you could predict these traps better.
+yourself up for a trap, surrounding yourself with cats around you.
 
 6 .- (2 bonus marks) Could a human playing the game in place
       of the mouse do better than your code? (yes, no, and
