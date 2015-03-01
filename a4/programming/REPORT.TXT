@@ -10,11 +10,11 @@ mark.
 
 ________________________________________________
 
-Student Name (last, first):
+Student Name (last, first): Dujay, Nicholas
 
-Student number:
+Student number: 999194900
 
-UTORid:
+UTORid: dujaynic
 
 READ THIS AND SIGN YOUR NAME AT THE END:
 
@@ -22,7 +22,7 @@ READ THIS AND SIGN YOUR NAME AT THE END:
 honesty and plaguarism. All work submitted as part
 of this assignment is my own.
 
-	Signed: _(your name goes here)__
+	Signed: _Nicholas Dujay__
 
 
 (-5 marks for failing to provide the identifying
@@ -36,8 +36,8 @@ but explain carefully when needed.
       are used, and why you think this is a good reward function
       for this problem.
 
-2 .- (3 marks) These are multiple experiments (once you are sure your 
-     QLearning code is working!) 
+2 .- (3 marks) These are multiple experiments (once you are sure your
+     QLearning code is working!)
 
      * IMPORTANT! * For each training run, SAVE the Qtable
      you will re-use the Qtables later.
@@ -47,26 +47,26 @@ but explain carefully when needed.
      doTrain(10000,20)
      # SAVE YOUR Q TABLE!
      doGame()
- 
-     Run at least 50 rounds of the game. 
+
+     Run at least 50 rounds of the game.
 
      Record the mouse winning rate:
 
      # Experiment 2
      initGame(1522,1)
-     doTrain(1000000,20)
+     doTrain(1000000,50)
      # SAVE YOUR Q TABLE!    <--- You have to submit this one as 'Qtable.pickle'
-     doGame()			   
+     doGame()
 
-     Run at least 50 rounds of the game. 
+     Run at least 50 rounds of the game.
 
      Record the mouse winning rate:
 
      Would the mouse keep improving and become invincible if
      you ran, say, 100,000,000 training rounds per batch?
-     
 
-4 .- (3 marks) 
+
+4 .- (3 marks)
 
      Using the QTable for the training session with 1,000,000
      training trials:
@@ -78,25 +78,25 @@ but explain carefully when needed.
      # 1
      initGame(4289,1)
      doGame()
-	
+
      Mouse Winning Rate:
 
      # 2
      initGame(31415,1)
      doGame()
-	
+
      Mouse Winning Rate:
 
      # 3
      initGame(3210,1)
      doGame()
-	
+
      Mouse Winning Rate:
 
      Average winning rate:
 
      Explain the above numbers compared to the winning rates in 3),
-     and provide some insight as to what is going on. 
+     and provide some insight as to what is going on.
 
 5 .- (2 marks) Is standard Q-Learning a rasonable strategy for environments
      that change constantly? discuss based on the above
@@ -155,10 +155,10 @@ _____________________________________________________
 Mark with an 'x' where appropriate. If something is only
 working partially, briefly describe what works, what
 doesn't work, or what problems exist.
-	
+
 			Complete/Working	Partial		Not done
 
-QLearn 
+QLearn
  update
 
 Reward
