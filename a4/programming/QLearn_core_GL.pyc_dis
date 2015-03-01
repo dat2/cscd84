@@ -1,0 +1,887 @@
+import ImageDraw
+import time
+import pickle
+from random import *
+from Image import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+from numpy import *
+import QLearn_global_data
+from QLearn import QLearn
+from QLearn import reward
+from QLearn import decideAction
+from QLearn import evaluateFeatures
+from QLearn import evaluateQsa
+from QLearn import maxQsa_prime
+from QLearn import QLearn_features
+from QLearn import decideAction_features
+catNip = []
+MouseDir = []
+N_killed = 0
+N_lunched = 0
+winID = 0
+canvas = new('RGB', [1024, 1024])
+maze = new('RGB', [1024, 1024])
+nLoops = 0
+CatSmartness = 0.85
+mousyIm = open('mousy.ppm')
+cheeseIm = open('cheesy.ppm')
+catIm = open('kitty.ppm')
+
+def renderMaze(R, G, B):
+    global maze
+    sf = 32 / QLearn_global_data.msx
+    draw = ImageDraw.Draw(maze)
+    for i in range(QLearn_global_data.msx):
+        for j in range(QLearn_global_data.msy):
+            x1 = i * QLearn_global_data.msx
+            y1 = j * QLearn_global_data.msy
+            x2 = (i + 1) * QLearn_global_data.msx - 1
+            y2 = (j + 1) * QLearn_global_data.msy - 1
+            x1 *= sf
+            y1 *= sf
+            x2 *= sf
+            y2 *= sf
+            if QLearn_global_data.A[(i + j * QLearn_global_data.msx)][0] == 0:
+                draw.line((x1,
+                 y1,
+                 x2,
+                 y1), fill=(R, G, B))
+            if QLearn_global_data.A[(i + j * QLearn_global_data.msx)][1] == 0:
+                draw.line((x2,
+                 y1,
+                 x2,
+                 y2), fill=(R, G, B))
+            if QLearn_global_data.A[(i + j * QLearn_global_data.msx)][2] == 0:
+                draw.line((x1,
+                 y2,
+                 x2,
+                 y2), fill=(R, G, B))
+            if QLearn_global_data.A[(i + j * QLearn_global_data.msx)][3] == 0:
+                draw.line((x1,
+                 y1,
+                 x1,
+                 y2), fill=(R, G, B))
+
+
+    del draw
+
+
+
+def renderAgents():
+    global mousyIm
+    global cheeseIm
+    global canvas
+    global catIm
+    canvas = maze.copy()
+    draw = ImageDraw.Draw(canvas)
+    sf = 32 / QLearn_global_data.msx
+    mxr = QLearn_global_data.mapCr.max()
+    mir = QLearn_global_data.mapCr.min()
+    mxg = QLearn_global_data.mapCg.max()
+    mig = QLearn_global_data.mapCg.min()
+    mxb = QLearn_global_data.mapCb.max()
+    mib = QLearn_global_data.mapCb.min()
+    if mxr - mir > 0 and mxg - mig > 0 and mxb - mib > 0:
+        for i in range(QLearn_global_data.msx):
+            for j in range(QLearn_global_data.msy):
+                x1 = i * QLearn_global_data.msx + 3
+                y1 = j * QLearn_global_data.msy + 3
+                x2 = (i + 1) * QLearn_global_data.msx - 4
+                y2 = (j + 1) * QLearn_global_data.msy - 4
+                x1 *= sf
+                y1 *= sf
+                x2 *= sf
+                y2 *= sf
+                r_col = (QLearn_global_data.mapCr[i][j] - mir) / (mxr - mir)
+                g_col = (QLearn_global_data.mapCg[i][j] - mig) / (mxg - mig)
+                b_col = (QLearn_global_data.mapCb[i][j] - mib) / (mxb - mib)
+                r_col = r_col * r_col
+                g_col = g_col * g_col
+                b_col = b_col * b_col
+                draw.rectangle((x1,
+                 y1,
+                 x2,
+                 y2), fill=(int(255 * r_col), int(255 * g_col), int(255 * b_col)))
+
+
+    for i in range(QLearn_global_data.Ncheese):
+        x = sf * QLearn_global_data.msx * QLearn_global_data.Cheese[i][0] + 1
+        y = sf * QLearn_global_data.msy * QLearn_global_data.Cheese[i][1] + 1
+        (sx, sy,) = cheeseIm.size
+        canvas.paste(cheeseIm, (x,
+         y,
+         x + sx,
+         y + sy))
+
+    for i in range(QLearn_global_data.Ncats):
+        x = sf * QLearn_global_data.msx * QLearn_global_data.Cats[i][0] + 1
+        y = sf * QLearn_global_data.msy * QLearn_global_data.Cats[i][1] + 1
+        (sx, sy,) = catIm.size
+        canvas.paste(catIm, (x,
+         y,
+         x + sx,
+         y + sy))
+
+    x = sf * QLearn_global_data.msx * QLearn_global_data.Mouse[0][0] + 1
+    y = sf * QLearn_global_data.msy * QLearn_global_data.Mouse[0][1] + 1
+    (sx, sy,) = mousyIm.size
+    canvas.paste(mousyIm, (x,
+     y,
+     x + sx,
+     y + sy))
+    del draw
+
+
+
+def endGame(flag):
+    flip = 0
+    for i in range(10):
+        if flag == 0:
+            if flip == 0:
+                renderMaze(255, 0, 0)
+                flip = 1
+            else:
+                renderMaze(0, 0, 255)
+                flip = 0
+        elif flip == 0:
+            renderMaze(0, 255, 0)
+            flip = 1
+        else:
+            renderMaze(0, 0, 255)
+            flip = 0
+        renderAgents()
+        UpdateFrame()
+        time.sleep(0.25)
+
+
+
+
+def initGame(seedNo, grid_size, Ncats, Ncheese):
+    global catNip
+    global nLoops
+    global MouseDir
+    if grid_size == 0:
+        print 'Working with grid size=4x4'
+        QLearn_global_data.msx = 4
+        QLearn_global_data.msy = 4
+    elif grid_size == 1:
+        print 'Working with grid size=8x8'
+        QLearn_global_data.msx = 8
+        QLearn_global_data.msy = 8
+    elif grid_size == 2:
+        print 'Working with grid size=16x16'
+        QLearn_global_data.msx = 16
+        QLearn_global_data.msy = 16
+    else:
+        print 'Working with grid size=32x32'
+        QLearn_global_data.msx = 32
+        QLearn_global_data.msy = 32
+    QLearn_global_data.nCells = QLearn_global_data.msx * QLearn_global_data.msy
+    QLearn_global_data.A = zeros(shape=(QLearn_global_data.msx * QLearn_global_data.msy, 4))
+    QLearn_global_data.Maze = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    QLearn_global_data.P = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    QLearn_global_data.mapCr = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    QLearn_global_data.mapCg = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    QLearn_global_data.mapCb = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    if QLearn_global_data.msx <= 8:
+        QLearn_global_data.Qtable = zeros(shape=(QLearn_global_data.nCells * QLearn_global_data.nCells * QLearn_global_data.nCells, 4))
+    if QLearn_global_data.msx > 8:
+        nLoops = int(QLearn_global_data.msx * QLearn_global_data.msy * 4 / 2.5)
+    else:
+        nLoops = int(QLearn_global_data.msx * QLearn_global_data.msy * 4 / 4.0)
+    random.seed(seedNo)
+    if QLearn_global_data.msx <= 8:
+        QLearn_global_data.Ncats = 1
+    else:
+        QLearn_global_data.Ncats = Ncats
+    for i in range(QLearn_global_data.Ncats):
+        QLearn_global_data.Cats.append([0, 0])
+        catNip.append(-1)
+
+    if QLearn_global_data.msx <= 8:
+        QLearn_global_data.Ncheese = 1
+    else:
+        QLearn_global_data.Ncheese = Ncheese
+    for i in range(QLearn_global_data.Ncheese):
+        QLearn_global_data.Cheese.append([0, 0])
+
+    MouseDir = -1
+    QLearn_global_data.params = [QLearn_global_data.Ncats, QLearn_global_data.Ncheese]
+    for i in range(QLearn_global_data.msx):
+        for j in range(QLearn_global_data.msy):
+            for k in range(4):
+                QLearn_global_data.A[(i + j * QLearn_global_data.msx)][k] = random.random()
+
+
+
+    flags = zeros(shape=(QLearn_global_data.msx * QLearn_global_data.msy, 1))
+    flags[0] = 1
+    MST = zeros(shape=(QLearn_global_data.msx * QLearn_global_data.msy, 4))
+    print 'Creating maze\n'
+    done = 0
+    while not done:
+        min = 10000
+        minX = -1
+        minY = -1
+        minI = -1
+        minJ = -1
+        minK = -1
+        done = 1
+        for i in range(QLearn_global_data.msx):
+            for j in range(QLearn_global_data.msy):
+                if flags[(i + j * QLearn_global_data.msx)] == 1:
+                    for k in range(4):
+                        if QLearn_global_data.A[(i + j * QLearn_global_data.msx)][k] < min:
+                            if k == 0:
+                                idx = i
+                                idy = j - 1
+                            elif k == 1:
+                                idx = i + 1
+                                idy = j
+                            elif k == 2:
+                                idx = i
+                                idy = j + 1
+                            else:
+                                idx = i - 1
+                                idy = j
+                            if idx >= 0 and idx < QLearn_global_data.msx and idy >= 0 and idy < QLearn_global_data.msy:
+                                if flags[(idx + idy * QLearn_global_data.msx)] == 0:
+                                    min = QLearn_global_data.A[(i + j * QLearn_global_data.msx)][k]
+                                    minX = idx
+                                    minY = idy
+                                    minI = i
+                                    minJ = j
+                                    minK = k
+                                    done = 0
+
+
+
+        if done == 0 and min < 10000 and minX != -1 and minY != -1 and minI != -1 and minJ != -1:
+            flags[minX + minY * QLearn_global_data.msx] = 1
+            MST[(minI + minJ * QLearn_global_data.msx)][minK] = 1
+            if minK == 0:
+                MST[(minX + minY * QLearn_global_data.msx)][2] = 1
+            elif minK == 1:
+                MST[(minX + minY * QLearn_global_data.msx)][3] = 1
+            else:
+                if minK == 2:
+                    MST[(minX + minY * QLearn_global_data.msx)][0] = 1
+                else:
+                    MST[(minX + minY * QLearn_global_data.msx)][1] = 1
+
+    for i in range(nLoops):
+        idx = random.randint(1, QLearn_global_data.msx - 1)
+        idy = random.randint(1, QLearn_global_data.msy - 1)
+        ngh = random.randint(0, 3)
+        MST[(idx + idy * QLearn_global_data.msx)][ngh] = 1
+        if ngh == 0:
+            idy = idy - 1
+            ngh = 2
+        elif ngh == 1:
+            idx = idx + 1
+            ngh = 3
+        elif ngh == 2:
+            idy = idy + 1
+            ngh = 0
+        else:
+            idx = idx - 1
+            ngh = 1
+        if idx >= 0 and idx < QLearn_global_data.msx and idy >= 0 and idy < QLearn_global_data.msy:
+            MST[(idx + idy * QLearn_global_data.msx)][ngh] = 1
+
+    for i in range(QLearn_global_data.msx * QLearn_global_data.msy):
+        for j in range(4):
+            QLearn_global_data.A[i][j] = MST[i][j]
+
+
+    print 'Done maze!\n'
+    print 'Setting up initial agent positions\n'
+    print 'Cheese at:\n'
+    for i in range(QLearn_global_data.Ncheese):
+        done = 0
+        while not done:
+            done = 1
+            ii = random.randint(QLearn_global_data.msx - 1)
+            jj = random.randint(QLearn_global_data.msy - 1)
+            for j in range(i):
+                if QLearn_global_data.Cheese[j][0] == ii and QLearn_global_data.Cheese[j][1] == jj:
+                    done = 0
+
+            if done:
+                QLearn_global_data.Cheese[i][0] = ii
+                QLearn_global_data.Cheese[i][1] = jj
+                print QLearn_global_data.Cheese[i]
+
+
+    print 'Cats at:\n'
+    for i in range(QLearn_global_data.Ncats):
+        done = 0
+        while not done:
+            done = 1
+            ii = random.randint(QLearn_global_data.msx - 1)
+            jj = random.randint(QLearn_global_data.msy - 1)
+            for j in range(i):
+                if QLearn_global_data.Cats[j][0] == ii and QLearn_global_data.Cats[j][1] == jj:
+                    done = 0
+
+            for j in range(QLearn_global_data.Ncheese):
+                if QLearn_global_data.Cheese[j][0] == ii and QLearn_global_data.Cheese[j][1] == jj:
+                    done = 0
+
+            if done:
+                QLearn_global_data.Cats[i][0] = ii
+                QLearn_global_data.Cats[i][1] = jj
+                print QLearn_global_data.Cats[i]
+
+
+    print 'Initial mouse location:\n'
+    done = 0
+    while not done:
+        done = 1
+        ii = random.randint(QLearn_global_data.msx - 1)
+        jj = random.randint(QLearn_global_data.msy - 1)
+        for j in range(QLearn_global_data.Ncats):
+            if QLearn_global_data.Cats[j][0] == ii and QLearn_global_data.Cats[j][1] == jj:
+                done = 0
+
+        for j in range(QLearn_global_data.Ncheese):
+            if QLearn_global_data.Cheese[j][0] == ii and QLearn_global_data.Cheese[j][1] == jj:
+                done = 0
+
+        if done:
+            QLearn_global_data.Mouse.append([ii, jj])
+
+    print QLearn_global_data.Mouse[0]
+
+
+
+def initWindow(title):
+    global winID
+    sarg = 'Dummy!'
+    carg = 1
+    glutInit(carg, sarg)
+    glutInitWindowPosition(25, 25)
+    glutInitWindowSize(640, 640)
+    winID = glutCreateWindow(title)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutReshapeFunc(WindowReshape)
+    glutDisplayFunc(MainLoop)
+    glutKeyboardFunc(kbHandler)
+
+
+
+def WindowReshape(w, h):
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluOrtho2D(0, 800, 800, 0)
+    glViewport(0, 0, w, h)
+
+
+
+def kbHandler(key, x, y):
+    if key == 'q':
+        exit(0)
+
+
+
+def UpdateFrame():
+    tsx = canvas.size[0]
+    tsy = canvas.size[1]
+    texImage = canvas.convert('RGB')
+    texImage = canvas.tostring('raw', 'RGB')
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glEnable(GL_TEXTURE_2D)
+    glDisable(GL_LIGHTING)
+    texture = glGenTextures(1)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    glBindTexture(GL_TEXTURE_2D, texture)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tsx, tsy, 0, GL_RGB, GL_UNSIGNED_BYTE, texImage)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(0.0, 0.0, 0.0)
+    glTexCoord2f(QLearn_global_data.msx / 32.0, 0.0)
+    glVertex3f(800.0, 0.0, 0.0)
+    glTexCoord2f(QLearn_global_data.msx / 32.0, QLearn_global_data.msx / 32.0)
+    glVertex3f(800.0, 800.0, 0.0)
+    glTexCoord2f(0.0, QLearn_global_data.msx / 32.0)
+    glVertex3f(0.0, 800.0, 0.0)
+    glEnd()
+    glFlush()
+    glutSwapBuffers()
+    glutSetWindow(winID)
+    glutPostRedisplay()
+    glDeleteTextures(texture)
+
+
+
+def checkForCats(x, y):
+    for i in range(QLearn_global_data.Ncats):
+        if QLearn_global_data.Cats[i][0] == x and QLearn_global_data.Cats[i][1] == y:
+            return 1
+
+    return 0
+
+
+
+def checkForCheese(x, y):
+    for i in range(QLearn_global_data.Ncheese):
+        if QLearn_global_data.Cheese[i][0] == x and QLearn_global_data.Cheese[i][1] == y:
+            return 1
+
+    return 0
+
+
+
+def CatMoves(ncat):
+    (x, y,) = QLearn_global_data.Cats[ncat]
+    dr = random.random()
+    if dr <= 0.9:
+        if catNip[ncat] == 0:
+            if y > 0 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][0] == 1:
+                QLearn_global_data.Cats[ncat] = [x, y - 1]
+                return 
+        if catNip[ncat] == 1:
+            if x < QLearn_global_data.msx - 1 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][1] == 1:
+                QLearn_global_data.Cats[ncat] = [x + 1, y]
+                return 
+        if catNip[ncat] == 2:
+            if y < QLearn_global_data.msy - 1 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][2] == 1:
+                QLearn_global_data.Cats[ncat] = [x, y + 1]
+                return 
+        if catNip[ncat] == 3:
+            if x > 0 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][3] == 1:
+                QLearn_global_data.Cats[ncat] = [x - 1, y]
+                return 
+    done = 0
+    while done == 0:
+        d = random.random()
+        if d <= 0.5:
+            if x > QLearn_global_data.Mouse[0][0] and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][3] == 1:
+                catNip[ncat] = 3
+                QLearn_global_data.Cats[ncat] = [x - 1, y]
+                done = 1
+            elif x < QLearn_global_data.Mouse[0][0] and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][1] == 1:
+                catNip[ncat] = 1
+                QLearn_global_data.Cats[ncat] = [x + 1, y]
+                done = 1
+            elif y > QLearn_global_data.Mouse[0][1] and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][0] == 1:
+                catNip[ncat] = 0
+                QLearn_global_data.Cats[ncat] = [x, y - 1]
+                done = 1
+            else:
+                if y < QLearn_global_data.Mouse[0][1] and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][2] == 1:
+                    catNip[ncat] = 2
+                    QLearn_global_data.Cats[ncat] = [x, y + 1]
+                    done = 1
+                else:
+                    done = 0
+        else:
+            d = randint(0, 3)
+            if d == 0 and y > 0 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][0] == 1:
+                catNip[ncat] = 0
+                QLearn_global_data.Cats[ncat] = [x, y - 1]
+                done = 1
+            if d == 1 and x < QLearn_global_data.msx - 1 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][1] == 1:
+                catNip[ncat] = 1
+                QLearn_global_data.Cats[ncat] = [x + 1, y]
+                done = 1
+            if d == 2 and y < QLearn_global_data.msy - 1 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][2] == 1:
+                catNip[ncat] = 2
+                QLearn_global_data.Cats[ncat] = [x, y + 1]
+                done = 1
+            if d == 3 and x > 0 and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][3] == 1:
+                catNip[ncat] = 3
+                QLearn_global_data.Cats[ncat] = [x - 1, y]
+                done = 1
+            return 
+
+
+
+
+def CatBFS():
+    cnt = 0
+    BFS_queue = []
+    BFS_queue.append(QLearn_global_data.Mouse[0])
+    while len(BFS_queue) > 0:
+        (x, y,) = BFS_queue.pop(0)
+        if checkForCheese(x, y):
+            QLearn_global_data.MousePath.append([x, y])
+            while QLearn_global_data.Mouse[0][0] != x or QLearn_global_data.Mouse[0][1] != y:
+                ty = QLearn_global_data.P[x][y] // QLearn_global_data.msx
+                tx = QLearn_global_data.P[x][y] % QLearn_global_data.msx
+                x = int(tx)
+                y = int(ty)
+                QLearn_global_data.MousePath.append([x, y])
+
+            return 1
+        if QLearn_global_data.A[(x + y * QLearn_global_data.msx)][0] == 1:
+            if QLearn_global_data.Maze[x][(y - 1)] == 0 and checkForCats(x, y - 1) == 0:
+                BFS_queue.append([x, y - 1])
+                QLearn_global_data.P[x][y - 1] = x + y * QLearn_global_data.msx
+                cnt = cnt + 1
+                QLearn_global_data.Maze[x][y - 1] = cnt
+        if QLearn_global_data.A[(x + y * QLearn_global_data.msx)][1] == 1 and checkForCats(x + 1, y) == 0:
+            if QLearn_global_data.Maze[(x + 1)][y] == 0:
+                BFS_queue.append([x + 1, y])
+                QLearn_global_data.P[(x + 1)][y] = x + y * QLearn_global_data.msx
+                cnt = cnt + 1
+                QLearn_global_data.Maze[(x + 1)][y] = cnt
+        if QLearn_global_data.A[(x + y * QLearn_global_data.msx)][2] == 1 and checkForCats(x, y + 1) == 0:
+            if QLearn_global_data.Maze[x][(y + 1)] == 0:
+                BFS_queue.append([x, y + 1])
+                QLearn_global_data.P[x][y + 1] = x + y * QLearn_global_data.msx
+                cnt = cnt + 1
+                QLearn_global_data.Maze[x][y + 1] = cnt
+        if QLearn_global_data.A[(x + y * QLearn_global_data.msx)][3] == 1 and checkForCats(x - 1, y) == 0:
+            if QLearn_global_data.Maze[(x - 1)][y] == 0:
+                BFS_queue.append([x - 1, y])
+                QLearn_global_data.P[(x - 1)][y] = x + y * QLearn_global_data.msx
+                cnt = cnt + 1
+                QLearn_global_data.Maze[(x - 1)][y] = cnt
+
+    return 0
+
+
+
+def SmartCats(ncat):
+    tNcheese = QLearn_global_data.Ncheese
+    tCheese = list(QLearn_global_data.Cheese)
+    tMouse = list(QLearn_global_data.Mouse)
+    tMousePath = list(QLearn_global_data.MousePath)
+    tMaze = QLearn_global_data.Maze.copy()
+    tNcats = QLearn_global_data.Ncats
+    QLearn_global_data.Ncats = 0
+    QLearn_global_data.Ncheese = 1
+    QLearn_global_data.Cheese = []
+    QLearn_global_data.Cheese.append([QLearn_global_data.Mouse[0][0], QLearn_global_data.Mouse[0][1]])
+    QLearn_global_data.Mouse = []
+    QLearn_global_data.Mouse.append([QLearn_global_data.Cats[ncat][0], QLearn_global_data.Cats[ncat][1]])
+    QLearn_global_data.MousePath = []
+    QLearn_global_data.Maze = zeros(shape=(QLearn_global_data.msx, QLearn_global_data.msy))
+    success = CatBFS()
+    if len(QLearn_global_data.MousePath) >= 1:
+        QLearn_global_data.MousePath.reverse()
+        if len(QLearn_global_data.MousePath) > 1:
+            QLearn_global_data.Cats[ncat][0] = QLearn_global_data.MousePath[1][0]
+            QLearn_global_data.Cats[ncat][1] = QLearn_global_data.MousePath[1][1]
+        else:
+            QLearn_global_data.Cats[ncat][0] = QLearn_global_data.MousePath[0][0]
+        QLearn_global_data.Cats[ncat][1] = QLearn_global_data.MousePath[0][1]
+    QLearn_global_data.Ncats = tNcats
+    QLearn_global_data.Ncheese = tNcheese
+    QLearn_global_data.Cheese = list(tCheese)
+    QLearn_global_data.Mouse = list(tMouse)
+    QLearn_global_data.MousePath = list(tMousePath)
+    QLearn_global_data.Maze = tMaze.copy()
+
+
+
+def MainLoop():
+    global CatSmartness
+    for i in range(QLearn_global_data.Ncats):
+        dr = random.random()
+        if dr <= CatSmartness:
+            SmartCats(i)
+        else:
+            CatMoves(i)
+
+    for i in range(QLearn_global_data.Ncats):
+        if QLearn_global_data.Cats[i][0] == QLearn_global_data.Mouse[0][0] and QLearn_global_data.Cats[i][1] == QLearn_global_data.Mouse[0][1]:
+            QLearn_global_data.stats[1] = QLearn_global_data.stats[1] + 1
+            setAgentStart()
+
+    if QLearn_global_data.msx <= 8:
+        (s, tmp,) = decodeState()
+        a = decideAction(s)
+    else:
+        a = decideAction_features(QLearn_global_data.Mouse, QLearn_global_data.Cats, QLearn_global_data.Cheese)
+    if a == 0:
+        QLearn_global_data.Mouse[0][1] -= 1
+    elif a == 1:
+        QLearn_global_data.Mouse[0][0] += 1
+    elif a == 2:
+        QLearn_global_data.Mouse[0][1] += 1
+    else:
+        QLearn_global_data.Mouse[0][0] -= 1
+    if QLearn_global_data.Mouse[0][0] < 0:
+        print 'Action resulted in mouse leaving the grid! there is a bug in your code.'
+        QLearn_global_data.Mouse[0][0] = 0
+    if QLearn_global_data.Mouse[0][0] > QLearn_global_data.msx:
+        print 'Action resulted in mouse leaving the grid! there is a bug in your code.'
+        QLearn_global_data.Mouse[0][0] = QLearn_global_data.msx - 1
+    if QLearn_global_data.Mouse[0][1] < 0:
+        print 'Action resulted in mouse leaving the grid! there is a bug in your code.'
+        QLearn_global_data.Mouse[0][1] = 0
+    if QLearn_global_data.Mouse[0][1] > QLearn_global_data.msy:
+        print 'Action resulted in mouse leaving the grid! there is a bug in your code.'
+        QLearn_global_data.Mouse[0][1] = QLearn_global_data.msy
+    for i in range(QLearn_global_data.Ncats):
+        if QLearn_global_data.Cats[i] == QLearn_global_data.Mouse[0]:
+            QLearn_global_data.stats[1] = QLearn_global_data.stats[1] + 1
+            setAgentStart()
+
+    for i in range(QLearn_global_data.Ncheese):
+        if QLearn_global_data.Mouse[0] == QLearn_global_data.Cheese[i]:
+            QLearn_global_data.Cheese.pop(i)
+            QLearn_global_data.Ncheese = QLearn_global_data.Ncheese - 1
+            QLearn_global_data.stats[0] = QLearn_global_data.stats[0] + 1
+            if len(QLearn_global_data.Cheese) == 0:
+                setAgentStart()
+            break
+
+    if sum(QLearn_global_data.stats) > 0:
+        pct = float(QLearn_global_data.stats[0]) / float(sum(QLearn_global_data.stats))
+    else:
+        pct = -1
+    print 'Current stats - cheese eaten: ',
+    print QLearn_global_data.stats[0],
+    print ' became lunch: ',
+    print QLearn_global_data.stats[1],
+    print ' rate=',
+    print pct
+    renderAgents()
+    UpdateFrame()
+    time.sleep(0.1)
+
+
+
+def setAgentStart():
+    QLearn_global_data.Ncheese = QLearn_global_data.params[1]
+    QLearn_global_data.Mouse[0] = [random.randint(QLearn_global_data.msx - 1), random.randint(QLearn_global_data.msy - 1)]
+    for i in range(QLearn_global_data.Ncats):
+        QLearn_global_data.Cats[i] = [random.randint(QLearn_global_data.msx - 1), random.randint(QLearn_global_data.msy - 1)]
+
+    QLearn_global_data.Cheese = []
+    for i in range(QLearn_global_data.Ncheese):
+        QLearn_global_data.Cheese.append([random.randint(QLearn_global_data.msx - 1), random.randint(QLearn_global_data.msy - 1)])
+
+
+
+
+def moveOne(s, pr):
+    dice = random.random()
+    (x, y,) = QLearn_global_data.Mouse[0]
+    if x < 0:
+        x = 0
+    if y < 0:
+        y = 0
+    if x >= QLearn_global_data.msx:
+        x = QLearn_global_data.msx - 1
+    if y >= QLearn_global_data.msy:
+        y = QLearn_global_data.msy - 1
+    if dice < pr:
+        probs = zeros(shape=(4, 1))
+        sum = 0.0
+        for i in range(4):
+            if QLearn_global_data.A[(x + y * QLearn_global_data.msx)][i] > 0:
+                probs[i] = 1.0
+                sum = sum + 1.0
+
+        for i in range(4):
+            probs[i] = probs[i] / sum
+
+        dice = random.random()
+        sum = 0.0
+        for i in range(4):
+            sum = sum + probs[i]
+            if sum >= dice:
+                break
+
+    else:
+        mx = -100000.0
+        idx = -1
+        if QLearn_global_data.msx <= 8:
+            for i in range(4):
+                if QLearn_global_data.Qtable[s][i] > mx and QLearn_global_data.A[(x + y * QLearn_global_data.msx)][i] > 0:
+                    mx = QLearn_global_data.Qtable[s][i]
+                    idx = i
+
+        else:
+            idx = decideAction_features(QLearn_global_data.Mouse, QLearn_global_data.Cats, QLearn_global_data.Cheese)
+        i = idx
+    if i == 0:
+        QLearn_global_data.Mouse[0][1] -= 1
+    elif i == 1:
+        QLearn_global_data.Mouse[0][0] += 1
+    elif i == 2:
+        QLearn_global_data.Mouse[0][1] += 1
+    else:
+        QLearn_global_data.Mouse[0][0] -= 1
+    if QLearn_global_data.Mouse[0][0] < 0:
+        print 'Action',
+        print i,
+        print 'resulted in mouse leaving the grid at ',
+        print QLearn_global_data.Mouse,
+        print ' there is a bug in your code.'
+        QLearn_global_data.Mouse[0][0] = 0
+        raw_input(' ')
+    if QLearn_global_data.Mouse[0][0] >= QLearn_global_data.msx:
+        print 'Action',
+        print i,
+        print 'resulted in mouse leaving the grid at ',
+        print QLearn_global_data.Mouse,
+        print ' there is a bug in your code.'
+        QLearn_global_data.Mouse[0][0] = QLearn_global_data.msx - 1
+        raw_input(' ')
+    if QLearn_global_data.Mouse[0][1] < 0:
+        print 'Action',
+        print i,
+        print 'resulted in mouse leaving the grid at ',
+        print QLearn_global_data.Mouse,
+        print ' there is a bug in your code.'
+        QLearn_global_data.Mouse[0][1] = 0
+        raw_input(' ')
+    if QLearn_global_data.Mouse[0][1] >= QLearn_global_data.msy:
+        print 'Action',
+        print i,
+        print 'resulted in mouse leaving the grid at ',
+        print QLearn_global_data.Mouse,
+        print ' there is a bug in your code.'
+        QLearn_global_data.Mouse[0][1] = QLearn_global_data.msy - 1
+        raw_input(' ')
+    dr = random.random()
+    if dr <= CatSmartness:
+        SmartCats(0)
+    else:
+        CatMoves(0)
+    return i
+
+
+
+def decodeState():
+    catIdx = QLearn_global_data.Cats[0][0] + QLearn_global_data.msx * QLearn_global_data.Cats[0][1]
+    cheeseIdx = QLearn_global_data.Cheese[0][0] + QLearn_global_data.msx * QLearn_global_data.Cheese[0][1]
+    mouseIdx = QLearn_global_data.Mouse[0][0] + QLearn_global_data.msx * QLearn_global_data.Mouse[0][1]
+    stn = QLearn_global_data.msx * QLearn_global_data.msy
+    stateIdx = catIdx + stn * cheeseIdx + stn * stn * mouseIdx
+    return [stateIdx, reward()]
+
+
+
+def doQLearn(learnTrials, ages):
+    global N_killed
+    global N_lunched
+    if QLearn_global_data.Ncats == 0 or QLearn_global_data.Ncheese == 0:
+        print 'Must call initGame() first!'
+        exit(0)
+    CatSmartness = 0.85
+    if QLearn_global_data.msx > 8:
+        print 'Setting alpha to a small value - change in your code if needed.'
+        QLearn_global_data.alpha = 0.1
+        print QLearn_global_data.alpha
+    for ag in range(ages):
+        pr = 1.0 - 1.0 * ag / (1.0 * ages)
+        print 'Round: ',
+        print ag,
+        print ' random move probability: ',
+        print pr
+        N_killed = 0
+        N_lunched = 0
+        setAgentStart()
+        if QLearn_global_data.msx <= 8:
+            (s, old_r,) = decodeState()
+        else:
+            old_r = reward()
+        oldpct = -1
+        newpct = 0
+        for i in range(learnTrials):
+            newpct = i * 10 / learnTrials
+            if oldpct != newpct:
+                print 'Training, %',
+                print 10 * newpct,
+                print ' complete...'
+                oldpct = newpct
+            if QLearn_global_data.msx <= 8:
+                a = moveOne(s, pr)
+                (s_new, r,) = decodeState()
+                QLearn(s, a, r, s_new)
+                s = s_new
+            else:
+                a = moveOne(0, pr)
+                r = reward()
+                QLearn_features(a, r)
+            for j in range(QLearn_global_data.Ncheese):
+                if QLearn_global_data.Mouse[0] == QLearn_global_data.Cheese[j]:
+                    N_lunched += 1
+                    QLearn_global_data.Cheese.pop(j)
+                    QLearn_global_data.Ncheese = QLearn_global_data.Ncheese - 1
+                    if QLearn_global_data.Ncheese == 0:
+                        setAgentStart()
+                    if QLearn_global_data.msx <= 8:
+                        (s, old_r,) = decodeState()
+                    else:
+                        old_r = reward()
+                    break
+
+            for j in range(len(QLearn_global_data.Cats)):
+                if QLearn_global_data.Mouse[0] == QLearn_global_data.Cats[j]:
+                    N_killed += 1
+                    setAgentStart()
+                    if QLearn_global_data.msx <= 8:
+                        (s, old_r,) = decodeState()
+                    else:
+                        old_r = reward()
+                    break
+
+
+        print 'Done! training round: ',
+        print ag
+        print 'Mouse died ',
+        print N_killed,
+        print ' times.'
+        print 'Mouse ate ',
+        print N_lunched,
+        print ' times.'
+        if QLearn_global_data.msx <= 8:
+            print 'Final table:'
+            print QLearn_global_data.Qtable
+            print 'Min and Max:'
+            print [QLearn_global_data.Qtable.min(), QLearn_global_data.Qtable.max()]
+        else:
+            print 'Final weights:'
+            print QLearn_global_data.Qweights
+        print 'Saving Training Data...'
+        if QLearn_global_data.msx <= 8:
+            f = file('Qtable.pickle', 'w')
+            pickle.dump(QLearn_global_data.Qtable, f)
+            f.close()
+        else:
+            f = file('Qweights.pickle', 'w')
+            pickle.dump(QLearn_global_data.Qweights, f)
+            f.close()
+
+
+
+
+def doGame():
+    if QLearn_global_data.Ncats == 0 or QLearn_global_data.Ncheese == 0:
+        print 'Must call initGame() first!'
+        exit(0)
+    print 'Loading training data...'
+    if QLearn_global_data.msx <= 8:
+        f = file('Qtable.pickle', 'r')
+        QLearn_global_data.Qtable = pickle.load(f)
+        f.close()
+    else:
+        f = file('Qweights.pickle', 'r')
+        QLearn_global_data.Qweights = pickle.load(f)
+        f.close()
+    setAgentStart()
+    QLearn_global_data.stats = [0, 0]
+    renderMaze(0, 255, 255)
+    renderAgents()
+    initWindow("Mouse vs. Kitties v3.0, F.J.E. '14")
+    glutMainLoop()
+
+
+

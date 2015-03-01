@@ -15,7 +15,7 @@ Reactive Agent
 - traction control
 - airplane flight control
   - decide how to move the control surfaces
-  - safety locks as well (can't let pilot flip the control)
+  - safety locks as well (can't let pilot flip the plane)
 
 Pacman AI
 - cats and mouse

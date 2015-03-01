@@ -1,0 +1,206 @@
+CSC D84 - Artificial Intelligence, Winter 2015
+
+Assignment 4 - Reinforcement Learning - Q Learning
+
+This assignment is worth:
+
+15 AIUs (Artificial Intelligence Units)
+toward the 35% assignment component of your final
+mark.
+
+________________________________________________
+
+Student Name (last, first):
+
+Student number:
+
+UTORid:
+
+READ THIS AND SIGN YOUR NAME AT THE END:
+
+ I certify that I have read the UTSC code on academic
+honesty and plaguarism. All work submitted as part
+of this assignment is my own.
+
+	Signed: _(your name goes here)__
+
+
+(-5 marks for failing to provide the identifying
+ information requested above)
+________________________________________________
+
+Answer the following questions. Be concise and clear
+but explain carefully when needed.
+
+1 .- (2 marks) Explain your reward function. What game elements
+      are used, and why you think this is a good reward function
+      for this problem.
+
+2 .- (3 marks) These are multiple experiments (once you are sure your 
+     QLearning code is working!) 
+
+     * IMPORTANT! * For each training run, SAVE the Qtable
+     you will re-use the Qtables later.
+
+     # Experiment 1, 10000 training rounds
+     initGame(1522,1)
+     doTrain(10000,20)
+     # SAVE YOUR Q TABLE!
+     doGame()
+ 
+     Run at least 50 rounds of the game. 
+
+     Record the mouse winning rate:
+
+     # Experiment 2
+     initGame(1522,1)
+     doTrain(1000000,20)
+     # SAVE YOUR Q TABLE!    <--- You have to submit this one as 'Qtable.pickle'
+     doGame()			   
+
+     Run at least 50 rounds of the game. 
+
+     Record the mouse winning rate:
+
+     Would the mouse keep improving and become invincible if
+     you ran, say, 100,000,000 training rounds per batch?
+     
+
+4 .- (3 marks) 
+
+     Using the QTable for the training session with 1,000,000
+     training trials:
+
+     Record the mouse's winning rate for the following setups
+     after 50 rounds of the game
+     (NOTE: NO TRAINING THIS TIME AROUND. Re-use your Qtable)
+
+     # 1
+     initGame(4289,1)
+     doGame()
+	
+     Mouse Winning Rate:
+
+     # 2
+     initGame(31415,1)
+     doGame()
+	
+     Mouse Winning Rate:
+
+     # 3
+     initGame(3210,1)
+     doGame()
+	
+     Mouse Winning Rate:
+
+     Average winning rate:
+
+     Explain the above numbers compared to the winning rates in 3),
+     and provide some insight as to what is going on. 
+
+5 .- (2 marks) Is standard Q-Learning a rasonable strategy for environments
+     that change constantly? discuss based on the above
+
+
+7 .- (5 marks) Explain your feature set for feature-based Q Learning, and
+               explain why and how each feature is expected to contribute
+	       to helping your mouse win
+
+8 .- (5 marks) Carry out the following experiments:
+
+     Experiment 0: (Baseline)
+
+     Train the mouse as follows:
+     initGame(15,2,2,3)
+     doQLearn(10,1)
+
+     this is to establish a baseline performance without actually doing much training
+
+     run the game once the training is done
+
+     doGame()
+
+     Record the mouse winning rate after 50 rounds:
+
+     Experiment 1:
+
+     Train the mouse as follows:
+     initGame(15,2,2,3)
+     doQLearn(2500,10)     # <---- You are free to  use as many trials as you need so your mouse learns to win as much as possible
+			   #       given your features
+
+     * SAVE YOUR WEIGHTS FILE *  <---- You'll need to submit this file
+
+     Then, start a new game:
+
+     initGame(31415,2,2,3)
+     doGame()
+
+     Report mouse winning rate after 50 rounds:
+
+     Experiment 2:
+
+     initGame(31415,3,2,3)
+     doGame()
+
+     Report mouse winning rate after 50 rounds:
+
+9 .- (5 marks) Based on the above, is feature-based learning better at
+     dealing with changing environments than standard Q-learning?
+     Provide a convincing (but short!) argument!
+
+
+_____________________________________________________
+
+Mark with an 'x' where appropriate. If something is only
+working partially, briefly describe what works, what
+doesn't work, or what problems exist.
+	
+			Complete/Working	Partial		Not done
+
+QLearn 
+ update
+
+Reward
+ function
+
+Decide
+ action
+
+featureEval
+
+evaluateQsa
+
+maxQsa_prime
+
+Qlearn_features
+
+decideAction_features
+
+_____________________________________________________
+
+Marking:
+
+(5 marks) Implemented QLearn update.
+
+(5 marks) Implemented a reasonable reward function
+
+(5 marks)  Implemented the function that chooses the
+           optimal action based on Qtable and
+           maze
+
+(15 marks) Implemented a non-trivial, good feature set
+	   and evaluation function
+
+(15 marks) Implemented a working feature-based Q-learning
+	   algorithm
+
+(20 marks) Competitive mouse performance
+
+(25 marks) Answers in this report file
+
+(- marks)  Penalty marks
+
+Total for A4:       / out of 90
+
+

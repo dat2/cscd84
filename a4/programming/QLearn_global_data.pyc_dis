@@ -1,0 +1,22 @@
+msx = 1
+msy = 1
+nCells = msx * msy
+A = []
+Maze = []
+P = []
+MousePath = []
+Ncats = 0
+Ncheese = 0
+Mouse = []
+Cats = []
+Cheese = []
+Qtable = []
+Qweights = []
+alpha = 0.5
+lamb = 0.85
+params = []
+stats = []
+mapCr = []
+mapCg = []
+mapCb = []
+
