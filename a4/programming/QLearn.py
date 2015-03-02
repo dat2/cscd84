@@ -90,9 +90,16 @@ def QLearn(s,a,r,s_new):
 
     ####################################################################
     ## TO DO:
-    ##       Implement this functin to carry out the Qtable updates
+    ##       Implement this function to carry out the Qtable updates
     ##       This is a 1-line function! (it's a long line)
     ####################################################################
+
+    # split into a few lines for readability
+    old = QLearn_global_data.Qtable[s][a]
+    alpha = QLearn_global_data.alpha
+    lamb = QLearn_global_data.lamb
+
+    QLearn_global_data.Qtable[s][a] = old + alpha * (r + lamb * max(QLearn_global_data.Qtable[s_new]) - old)
 
     return
 
@@ -304,21 +311,21 @@ def QLearn_features(a,r):
     return
 
 def decideAction_features(mousep, catp, cheesep):
-        ####################################################################
-        #
-        # This function is used to decide which action to take from the
-        # specified configuration given the current weights of the features
-        # in the QLearning method.
-        #
-        # Returns the index 'idx' of the optimal action. idx is in [0,3] as
-        # described in 'decideAction' above
-        ####################################################################
+    ####################################################################
+    #
+    # This function is used to decide which action to take from the
+    # specified configuration given the current weights of the features
+    # in the QLearning method.
+    #
+    # Returns the index 'idx' of the optimal action. idx is in [0,3] as
+    # described in 'decideAction' above
+    ####################################################################
 
-        ####################################################################
-        #
-        # TO DO: Complete this function.
-        #
-        ####################################################################
+    ####################################################################
+    #
+    # TO DO: Complete this function.
+    #
+    ####################################################################
 
-        return 0        # Replace with your own code
+    return 0        # Replace with your own code
 
