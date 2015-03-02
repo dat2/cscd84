@@ -1,0 +1,45 @@
+Reinforcement Learning (RIL)
+
+Q-Learning -> Process init Q(s,a) = 0
+(8x8)(8x8)(8x8)x4 - repeat
+choose random action, receive reward r,
+observe result state s'
+
+<s,a,r,s'>
+
+update
+Q(s,a) += alpha ( [ r + gamma max a' Q(s',a') - Q(s,a)])
+progressively decrease % random choice increase % of Pi chance
+you end up choosing from your policy, during training you add random chance to give
+you a better probability of getting a higher reward
+
+what are we learning in Q-learning?
+knowledge about which action yields greater reward for each state
+
+if we want to generalize this, we need to drop state
+
+Generalizing RL -> feature based learning
+                    value, needs to be comparable
+                   describe a property of some configuration / state
+
+idea -> replace state config with feature vector
+describes any state
+S_i = [f1_i; f2_i; ... fk_i]
+assume numeric features
+
+similar features -> similar policies are likely to work
+
+no more Q table
+directly eval Q(S_j) = Σ_i w_i * f_i_j
+what is there to learn?
+weights
+
+before Q(s,a) = Q(s,a) + alpha[difference]
+                              [r + gamma max_a' Q(s',a') - Q(s,a)]
+              feature learning
+
+              w_i = w_i + alpha[r + gamma max_a' Q(s') - Q(s)] * f_i(state)
+
+you stop when changes to your weights converge (differences are tiny)
+
+feature based reinforcement handles much more than Q-learning
