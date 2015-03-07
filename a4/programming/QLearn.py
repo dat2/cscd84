@@ -60,6 +60,7 @@
 
 from math import *
 from numpy import *
+from operator import itemgetter
 
 # Import global data
 import QLearn_global_data
@@ -127,8 +128,26 @@ def reward():
     ##
     ##      Document this function carefully in the REPORT.TXT
     ####################################################################
+    mouse = QLearn_global_data.Mouse[0]
 
-    return 0        # Replace with your computed reward
+    closest_cheese = min([manhattan(mouse, cheese) for cheese in QLearn_global_data.Cheese])
+    closest_cat = min([manhattan(mouse, cat) for cat in QLearn_global_data.Cats])
+
+    reward = closest_cat - closest_cheese
+
+    if checkForCheese(mouse):
+      reward = 1000
+    if checkForCats(mouse):
+      reward = -1000
+
+    # print '==================================='
+    # print 'Cheese:', QLearn_global_data.Cheese
+    # print 'Cats:', QLearn_global_data.Cats
+    # print 'Mouse:', mouse
+    # print 'Reward:', reward
+    # print '==================================='
+
+    return reward        # Replace with your computed reward
 
 def decideAction(s):
     ####################################################################
@@ -154,8 +173,13 @@ def decideAction(s):
     ##                      idx=2 -> Mouse moves down
     ##                      idx=3 -> Mouse moves left
     ####################################################################
+    actions = enumerate(QLearn_global_data.Qtable[s])
+    mouse = QLearn_global_data.Mouse[0]
 
-    return 0        # Replace this with your return value!
+    return max(
+      [(i,action) for i,action in actions if QLearn_global_data.A[index(mouse)][i]],
+      key=itemgetter(1)
+    )[0]
 
 ############################################################################
 #
@@ -244,7 +268,7 @@ def evaluateQsa(feature_list):
     #
     ####################################################################
 
-    return 0        # Replace with your own code
+    return dot(feature_list, QLearn_global_data.Qweights)
 
 def maxQsa_prime(mousep,catp,cheesep):
     ####################################################################
@@ -270,7 +294,10 @@ def maxQsa_prime(mousep,catp,cheesep):
     #
     ####################################################################
 
-    return [0,0]      # Replace with your code
+    actions = enumerate(QLearn_global_data.A[index(mousep[0])])
+    rewards = [ [i,evaluateQsa(evaluateFeatures(move(mousep, i),catp,cheesep))] for i,adj in actions if adj]
+
+    return max(rewards, key=itemgetter(1))      # Replace with your code
 
 def QLearn_features(a,r):
     ####################################################################
@@ -308,6 +335,14 @@ def QLearn_features(a,r):
     #
     ####################################################################
 
+    features = evaluateFeatures(mousep, catp, cheesep)
+    Qsa = evaluateQsa(features)
+
+    alpha = QLearn_global_data.alpha
+    lamb = QLearn_global_data.lamb
+
+    QLearn_global_data.Qweights = [weight + alpha * (r + lamb * maxQsa_prime(mousep, catp, cheesep)[1] - Qsa) * features[i] for i,weight in enumerate(QLearn_global_data.Qweights)]
+
     return
 
 def decideAction_features(mousep, catp, cheesep):
@@ -327,5 +362,49 @@ def decideAction_features(mousep, catp, cheesep):
     #
     ####################################################################
 
-    return 0        # Replace with your own code
+    return maxQsa_prime(mousep, catp, cheesep)[0]        # Replace with your own code
 
+# my own helpers
+def index((x,y)):
+  return x + y * QLearn_global_data.msx
+
+def checkForCats((x,y)):
+  # A little helper function to tell you if there is a cat at [x,y].
+  # Returns 1 if there is a cat, 0 otherwise.
+  for i in range(QLearn_global_data.Ncats):
+    if (QLearn_global_data.Cats[i][0] == x and QLearn_global_data.Cats[i][1] == y):
+      return 1
+
+  return 0
+
+def checkForCheese((x,y)):
+  # A little helper function to tell you if there is cheese at [x,y].
+  # Returns 1 if there is cheese, 0 otherwise.
+  for i in range(QLearn_global_data.Ncheese):
+    if (QLearn_global_data.Cheese[i][0] == x and QLearn_global_data.Cheese[i][1] == y):
+      return 1
+
+  return 0
+
+def manhattan((x,y),(x2,y2)):
+  return abs(x-x2) + abs(y-y2)
+
+def maxDist():
+  return QLearn_global_data.msx + QLearn_global_data.msy
+
+def move((x,y),action):
+  return [[x+getX(action), y+getY(action)]]
+
+def getX(action):
+  if action == 1:
+    return 1
+  elif action == 3:
+    return -1
+  return 0
+
+def getY(action):
+  if action == 0:
+    return -1
+  elif action == 2:
+    return 1
+  return 0

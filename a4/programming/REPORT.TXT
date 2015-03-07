@@ -22,7 +22,7 @@ READ THIS AND SIGN YOUR NAME AT THE END:
 honesty and plaguarism. All work submitted as part
 of this assignment is my own.
 
-	Signed: _Nicholas Dujay__
+        Signed: _Nicholas Dujay__
 
 
 (-5 marks for failing to provide the identifying
@@ -35,6 +35,12 @@ but explain carefully when needed.
 1 .- (2 marks) Explain your reward function. What game elements
       are used, and why you think this is a good reward function
       for this problem.
+
+I use the distance of the closest cheese and the closest cat. I subtract the
+closest_cheese distance from the closest_cat because it gives you higher numbers
+if cats are further away than the cheese, and negative rewards if the cat is
+closer than the cheese. This encourages the mouse to take actions that take it
+closer to the cheese every time.
 
 2 .- (3 marks) These are multiple experiments (once you are sure your
      QLearning code is working!)
@@ -50,7 +56,7 @@ but explain carefully when needed.
 
      Run at least 50 rounds of the game.
 
-     Record the mouse winning rate:
+     Record the mouse winning rate: 0.352941176471
 
      # Experiment 2
      initGame(1522,1)
@@ -104,7 +110,7 @@ but explain carefully when needed.
 
 7 .- (5 marks) Explain your feature set for feature-based Q Learning, and
                explain why and how each feature is expected to contribute
-	       to helping your mouse win
+               to helping your mouse win
 
 8 .- (5 marks) Carry out the following experiments:
 
@@ -127,7 +133,7 @@ but explain carefully when needed.
      Train the mouse as follows:
      initGame(15,2,2,3)
      doQLearn(2500,10)     # <---- You are free to  use as many trials as you need so your mouse learns to win as much as possible
-			   #       given your features
+                           #       given your features
 
      * SAVE YOUR WEIGHTS FILE *  <---- You'll need to submit this file
 
@@ -156,26 +162,26 @@ Mark with an 'x' where appropriate. If something is only
 working partially, briefly describe what works, what
 doesn't work, or what problems exist.
 
-			Complete/Working	Partial		Not done
+                        Complete/Working        Partial         Not done
 
-QLearn
+QLearn                         X
  update
 
-Reward
+Reward                         X
  function
 
-Decide
+Decide                         X
  action
 
-featureEval
+featureEval                                                        X
 
-evaluateQsa
+evaluateQsa                    X
 
-maxQsa_prime
+maxQsa_prime                   X
 
-Qlearn_features
+Qlearn_features                X
 
-decideAction_features
+decideAction_features          X
 
 _____________________________________________________
 
@@ -190,10 +196,10 @@ Marking:
            maze
 
 (15 marks) Implemented a non-trivial, good feature set
-	   and evaluation function
+           and evaluation function
 
 (15 marks) Implemented a working feature-based Q-learning
-	   algorithm
+           algorithm
 
 (20 marks) Competitive mouse performance
 
