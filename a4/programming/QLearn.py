@@ -245,7 +245,20 @@ def evaluateFeatures(mousep, catp, cheesep):
 
     feature_list=[]         # Add as many features as you need!
 
-    return feature_list
+    mouse = mousep[0]
+    closest_cheese = min([manhattan(mouse, cheese) for cheese in cheesep])
+    closest_cat = min([manhattan(mouse, cat) for cat in catp])
+    num_cats_nearby = len(filter(lambda x: x < 5, [manhattan(mouse, cheese) for cheese in cheesep]))
+
+    feature_list.append(closest_cheese)
+    feature_list.append(closest_cat)
+    feature_list.append(num_cats_nearby)
+    feature_list.append(checkForCheese(mouse)) # if the mouse has eaten the cheese
+    feature_list.append(checkForCats(mouse)) # if the mouse is dead
+    feature_list.append(QLearn_global_data.Ncats)
+    feature_list.append(QLearn_global_data.Ncheese)
+
+    return feature_list/linalg.norm(feature_list)
 
 def evaluateQsa(feature_list):
     ####################################################################
@@ -295,7 +308,7 @@ def maxQsa_prime(mousep,catp,cheesep):
     ####################################################################
 
     actions = enumerate(QLearn_global_data.A[index(mousep[0])])
-    rewards = [ [i,evaluateQsa(evaluateFeatures(move(mousep, i),catp,cheesep))] for i,adj in actions if adj]
+    rewards = [ [i,evaluateQsa(evaluateFeatures(move(mousep[0], i),catp,cheesep))] for i,adj in actions if adj]
 
     return max(rewards, key=itemgetter(1))      # Replace with your code
 

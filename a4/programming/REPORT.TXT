@@ -66,11 +66,15 @@ closer to the cheese every time.
 
      Run at least 50 rounds of the game.
 
-     Record the mouse winning rate:
+     Record the mouse winning rate: 0.933333333333 (56/60)
 
      Would the mouse keep improving and become invincible if
      you ran, say, 100,000,000 training rounds per batch?
 
+     There will be some situations where the mouse can't make the best decision
+     if only due to cornering itself. Qlearning may never be able to learn not
+     to corner itself if the mouse doesn't go to each spot where it can
+     be cornered often enough.
 
 4 .- (3 marks)
 
@@ -85,32 +89,49 @@ closer to the cheese every time.
      initGame(4289,1)
      doGame()
 
-     Mouse Winning Rate:
+     Mouse Winning Rate: 0.529411764706
 
      # 2
      initGame(31415,1)
      doGame()
 
-     Mouse Winning Rate:
+     Mouse Winning Rate: 0.5
 
      # 3
      initGame(3210,1)
      doGame()
 
-     Mouse Winning Rate:
+     Mouse Winning Rate: 0.566666666667
 
-     Average winning rate:
+     Average winning rate: 0.5266666666667
 
      Explain the above numbers compared to the winning rates in 3),
      and provide some insight as to what is going on.
 
+     The mouse has associated states with the specific maze, rather than a maze
+     in general. When the mouse goes to a different maze, a specific move may
+     have been bad for it on the 1522 seed's maze, but for the new maze it may
+     have been a great move. Qlearning doesn't generalize to different mazes
+     very well.
+
 5 .- (2 marks) Is standard Q-Learning a rasonable strategy for environments
      that change constantly? discuss based on the above
 
+     Based on the above, standard Q-Learning is not very good for constantly
+     changing environments. The mouse associates rewards on the result from the
+     environment rather than directly from the action in different situations.
 
 7 .- (5 marks) Explain your feature set for feature-based Q Learning, and
                explain why and how each feature is expected to contribute
                to helping your mouse win
+
+1. closest_cheese - this will help the mouse go towards cheese
+2. closest_cat - this will help the mouse avoid cats
+3. num_cats_nearby - this will help the mouse avoid many cats
+4. checkForCheese(mouse) - again will help the mouse go towards cheese
+5. checkForCats(mouse) - help the mouse avoid death
+6. Ncats - give the mouse how dangerous it is
+7. Ncheese - give the mouse an indication of its options
 
 8 .- (5 marks) Carry out the following experiments:
 
@@ -128,7 +149,7 @@ closer to the cheese every time.
 
      Record the mouse winning rate after 50 rounds:
 
-     Experiment 1:
+     Experiment 1: 0.0666666666667
 
      Train the mouse as follows:
      initGame(15,2,2,3)
@@ -142,20 +163,28 @@ closer to the cheese every time.
      initGame(31415,2,2,3)
      doGame()
 
-     Report mouse winning rate after 50 rounds:
+     Report mouse winning rate after 50 rounds: 0.612403100775
 
      Experiment 2:
 
      initGame(31415,3,2,3)
      doGame()
 
-     Report mouse winning rate after 50 rounds:
+     Report mouse winning rate after 50 rounds: 0.55737704918
 
 9 .- (5 marks) Based on the above, is feature-based learning better at
      dealing with changing environments than standard Q-learning?
      Provide a convincing (but short!) argument!
 
+Based on my particular results, no. However, since features are independent of
+the environment, feature-based learning will train the mouse to learn how to make
+better moves rather than learn how to traverse the environment.
 
+After observing the feature-based learning mouse versus the qlearning mouse, I
+have noticed that the qlearning mouse will use the environment based on previous
+safest paths where as the feature-based learning mouse will actively avoid cats
+(but run into walls constantly), which suggests that the feature-based learning
+mouse learns moves independent of the environment.
 _____________________________________________________
 
 Mark with an 'x' where appropriate. If something is only
@@ -173,7 +202,7 @@ Reward                         X
 Decide                         X
  action
 
-featureEval                                                        X
+featureEval                    X
 
 evaluateQsa                    X
 
