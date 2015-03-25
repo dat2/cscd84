@@ -1,0 +1,182 @@
+CSC D84 - Artificial Intelligence, Winter 2015
+
+Assignment 5 - Neural Networks for OCR
+
+This assignment is worth:
+
+10 AIUs (Artificial Intelligence Units)
+toward the 35% assignment component of your final
+mark.
+
+________________________________________________
+
+Student Name (last, first): Dujay, Nicholas
+
+Student number: 999194900
+
+UTORid: dujaynic
+
+READ THIS AND SIGN YOUR NAME AT THE END:
+
+ I certify that I have read the UTSC code on academic
+honesty and plagiarism. All work submitted as part
+of this assignment is my own.
+
+	Signed: _Nicholas Dujay__
+
+
+(-5 marks for failing to provide the identifying
+ information requested above)
+________________________________________________
+
+Answer the following questions. Be concise and clear
+but explain carefully when needed.
+
+Note: Empirically, I have had success with the following parameters:
+
+    Learning rates in [2,6], threshold in [.01, .05] for 1-layer
+     networks
+
+    Learninng rates in [.25,10], threshold in [.01, .05] for 2-layer
+     networks
+
+    For 2-layer networks, I have seen good results with 15-30 hidden
+     units
+
+    You will have to try and see what works best for each network
+     architecture.
+
+1 .- (2.5 marks) Train a 1-layer network using the Logistic activation
+               function.
+
+		Report the learning rate used:
+		Report the threshold used:
+
+		Train the network with 3 different random seeds,
+		for each seed report:
+
+		List of seeds used:
+
+		Average classification accuracy on training set:
+		Average classification accuracy on testing set:
+
+		Save a screenshot of the trained network, call your
+		file:
+
+		 	1layer-­logistic-­final.jpg
+
+2 .- (2.5 marks) Repeat the process above but using a 1-layer network
+		with hyperbolic tangent activation function.
+
+		Report the learning rate used:
+		Report the threshold used:
+
+		For the 3 random seeds report:
+
+		List of seeds used:
+
+		Average classification accuracy on training set:
+		Average classification accuracy on testing set:
+
+		Save a screenshot of the trained network, call your
+		file:
+
+			1layer-tanh-final.jpg
+
+3 .- (2.5 marks) Repeat the process above using a 2-layer network
+		with hyperbolic tangent activation function.
+
+		Report the learning rate used:
+		Report the threshold used:
+		Number of hidden units:
+
+		For the 3 random seeds report:
+
+		List of seeds used:
+
+		Average classification accuracy on training set:
+		Average classification accuracy on testing set:
+
+		Save a screenshot of the trained network, call your
+		file:
+
+			2layer-tanh-final.jpg
+
+4 .- (2.5 marks) Repeat the process above using a 2-layer network
+		with logistic activation function.
+
+		Report the learning rate used:
+		Report the threshold used:
+		Number of hidden units:
+
+		For the 3 random seeds report:
+
+		List of seeds used:
+
+		Average classification accuracy on training set:
+		Average classification accuracy on testing set:
+
+		Save a screenshot of the trained network, call your
+		file:
+
+			2layer-logistic-final.jpg
+
+5 .- (5 marks) Which network architecture (number of layers/type of
+	       activation function) performs best, and why?
+
+		Here you want to discuss in terms of classification
+		accuracy, but also consider training time, ease to
+		set the network parameters (learning rate and threshold,
+		number of hidden units if applicable), and whether
+		the network seems very sensitive to the parameters
+		(e.g. unless the parameters are set to very specific
+		values the network won't learn).
+
+6 .- (10 marks) Describe how you would build a network to play the cat
+	        and mouse game (move the mouse to help it survive).
+
+		- Describe what the input is in terms of a vector of
+		  values
+		- Describe what the output layer looks like (how many
+		  neurons and what they encode)
+		- Describe the error function
+		- How many layers should you use?
+
+_____________________________________________________
+
+Mark with an 'x' where appropriate. If something is only
+working partially, briefly describe what works, what
+doesn't work, or what problems exist.
+
+        	Complete/Working	Partial		Not done
+
+Logistic
+ activation
+
+Hyperbolic
+ tangent
+  activation
+
+sigmoid_prime()
+
+Feed-Forward
+ computation
+
+Training by
+ back-propagation
+_____________________________________________________
+
+Marking:
+
+(5 marks) Sigmoid and Hyperbolic Tangent activation functions
+
+(5 marks) Sigmoid prime function
+
+(10 marks) Feed-forward computation
+
+(20 marks) Backpropagation weight adjustments
+
+(25 marks) Answers in this report
+
+Total for A5:       / out of 65
+

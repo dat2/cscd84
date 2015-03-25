@@ -1,0 +1,77 @@
+Neural Nets (the small version)
+
+neurons learn and shit, neurons are like a giant graph in our brain, there are
+roughly input edges (connections) and roughly output edges (connections)
+
+lets copy paste the human brain, but we don't understand neurons very well, in
+groups
+
+dendrites (small things), axon (edges to other neurons), body, nucleus, synapse
+
+simple model for artificial neuron
+McCullough-Pitts model
+
+I_1 -> w_1 \
+I_2 -> w_2 \
+    ...      Σ [A(I) activation] -> activation function ->
+I_n -> w_n _/
+
+A(I) = I^-t * w
+
+if A(I) > some threshold, then the neuron fires
+
+- create a set of artificial neurons
+- how do i connect these neurons into networks?
+- how do i adjust the weights?
+- see how well it works
+
+how many neurons does the human brain have
+# neurons in brain -> 10^11
+# synapses -> 10^14
+# updates / second -> 10^14
+
+Perceptron
+perceptron is the Σ [A(I) activation] -> activation function
+there's also a bias added to the Σ
+out = f(w^T * I + b), linear in inputs
+
+f is activation function
+a) threshold / step, when x >= t, y = 1, else y = 0
+b) logistic function, softer threshold, t_0 <= x <= t_1, 0 < y < 1, x >= t_1, y = 1, else y = 0
+\frac{1}{1 + e^{-3x}}
+c) hyperbolic tangent
+
+the shape is important for b / c, they are also called sigmoid functions
+
+ln(-1) / i = pi
+
+d) radial basis function (RBF)
+
+letter P -> input vector
+[o][o][o][ ]
+[o][ ][o][ ]
+[o][o][ ][ ]
+[o][ ][ ][ ]
+
+[o][o][o][ ][o][ ][o][ ][o][o][ ][ ][o][ ][ ][ ]
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+  --------------------------------------------
+                      |
+          bias -> perceptron
+                      |
+                      1
+
+if input_i = pattern_i
+
+weight_white = 1, if they are in the right place
+weight_black = -1, if they are in the right place
+
+threshold = 8
+
+optical character recognition is the final desired result
+
+multipatterns?
+
+multiple perceptrons
+
+NN -> reinforcement learning
