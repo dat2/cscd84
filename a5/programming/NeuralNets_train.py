@@ -18,43 +18,43 @@
 # You have access to the following global data (all
 # prefixed by 'NeuralNets_global_data.' )
 #
-# N_out		- Number of output neurons (one per
+# N_out   - Number of output neurons (one per
 #                 digit in this case, so this is fixed
-#		  at 10, digits are 0 to 9)
-# N_in		- Number of inputs. Digits in our
-#		  problem consist of a matrix of
-#		  8x8 pixels, so 64 inputs plus 1
-#		  for the bias term = 65
-# N_hidden	- Number of hidden-layer units.
-#		  we will train networks with
-#		  different numbers of units. See
-#		  the REPORT.TXT for more details
-#		  Note that the actual number of
-#		  neurons is N_hidden-1, but we have
-#		  one extra entry for the bias term!
-# alpha		- The network's learning rate. Set by
-#		  the NeuralNets_init() function.
-# sig_type	- Type of sigmoidal function to use,
-#		  0 -> logistic, 1 -> tanh
+#     at 10, digits are 0 to 9)
+# N_in    - Number of inputs. Digits in our
+#     problem consist of a matrix of
+#     8x8 pixels, so 64 inputs plus 1
+#     for the bias term = 65
+# N_hidden  - Number of hidden-layer units.
+#     we will train networks with
+#     different numbers of units. See
+#     the REPORT.TXT for more details
+#     Note that the actual number of
+#     neurons is N_hidden-1, but we have
+#     one extra entry for the bias term!
+# alpha   - The network's learning rate. Set by
+#     the NeuralNets_init() function.
+# sig_type  - Type of sigmoidal function to use,
+#     0 -> logistic, 1 -> tanh
 #
-# W_io		- For networks with NO hidden layer,
-#		  this gives the weights connecting
-#		  inputs to output neurons.
-#		  This array is of size (N_in, N_out)
-#		  and W_io(i,j) gives the weight
-#		  connecting input i to output j
+# W_io    - For networks with NO hidden layer,
+#     this gives the weights connecting
+#     inputs to output neurons.
+#     This array is of size (N_in, N_out)
+#     and W_io(i,j) gives the weight
+#     connecting input i to output j
 #
-# W_ih		- For networks with hidden layer,
-#		  this contains the weights linking
-#		  inputs to hidden layer neurons.
-#		  the arry has size (N_in, N_hidden-1)
-#		  (MIND the -1!)
+# W_ih    - For networks with hidden layer,
+#     this contains the weights linking
+#     inputs to hidden layer neurons.
+#     the arry has size (N_in, N_hidden-1)
+#     (MIND the -1!)
 #
-# W_ho		- For networks with hidden layer,
-#		  this gives the weights connecting
-#		  neurons in the hidden layer to
-#		  units in the output layer. The
-#		  array is of size (N_hidden, N_out)
+# W_ho    - For networks with hidden layer,
+#     this gives the weights connecting
+#     neurons in the hidden layer to
+#     units in the output layer. The
+#     array is of size (N_hidden, N_out)
 #
 # Do not add any additional global data.
 #
@@ -68,10 +68,10 @@ from numpy import *
 
 def sigmoid(x):
 
-	if NeuralNets_global_data.sig_type:
-		return(tanhyp(x))
-	else:
-		return(logistic(x))
+  if NeuralNets_global_data.sig_type:
+    return(tanhyp(x))
+  else:
+    return(logistic(x))
 
 def logistic(x):
 ##########################################################
@@ -80,7 +80,7 @@ def logistic(x):
 #
 ##########################################################
 
-	return 1.0 / (1.0 + math.exp(-x))
+  return 1.0 / (1.0 + math.exp(-x))
 
 def tanhyp(x):
 ##########################################################
@@ -90,7 +90,7 @@ def tanhyp(x):
 #
 ##########################################################
 
-	return(0.0)
+  return (math.exp(x) - math.exp(-x)) / (math.exp(z) + math.exp(-z))
 
 def sigmoid_prime(a):
 ##########################################################
@@ -100,10 +100,10 @@ def sigmoid_prime(a):
 #        of the output of the neuron.
 #
 ##########################################################
-	if (NeuralNets_global_data.sig_type):
-		return(0.0)		# Change this as needed!
-	else:
-		return(0.0)		# Change this as needed
+  if (NeuralNets_global_data.sig_type):
+    return 1.0 - a ** 2   # Change this as needed!
+  else:
+    return a * (1 - a)    # Change this as needed
 
 def FeedForward(input_sample):
 ##########################################################
@@ -129,20 +129,24 @@ def FeedForward(input_sample):
 #       called depending on what the user specifies.
 ##########################################################
 
-	outputActivation=zeros(shape=(NeuralNets_global_data.N_out,1))		# Array of activation values for output units
-	hiddenActivation=zeros(shape=(NeuralNets_global_data.N_hidden,1))	# Array of activation values for hidden units
-	# DO remember that the last entry in hiddenActivation should be a constant
-	# bias term = 1.0!
+  outputActivation=zeros(shape=(NeuralNets_global_data.N_out,1))    # Array of activation values for output units
+  hiddenActivation=zeros(shape=(NeuralNets_global_data.N_hidden,1)) # Array of activation values for hidden units
+  # DO remember that the last entry in hiddenActivation should be a constant
+  # bias term = 1.0!
 
-	##########################################################
-	#
-	# TO DO: Complete this function to compute the activation
-	#        values for each neuron in the network.
-	#
-	##########################################################
+  ##########################################################
+  #
+  # TO DO: Complete this function to compute the activation
+  #        values for each neuron in the network.
+  #
+  ##########################################################
+  if NeuralNets_global_data.N_hidden == 0:
+    for o in range(NeuralNets_global_data.N_out):
+      outputActivation[o] = sigmoid(dot(input_sample, [NeuralNets_global_data.W_io[i][o] for i in range(NeuralNets_global_data.N_in)]))
+  else:
+    pass
 
-
-	return [outputActivation,hiddenActivation]
+  return [outputActivation,hiddenActivation]
 
 def trainOneSample(input_sample, input_label):
 ################################################################
@@ -172,31 +176,33 @@ def trainOneSample(input_sample, input_label):
 #       the output of the neuron.
 ################################################################
 
-	###############################################################
-	# Use the 'errors' array to store the error between each
-	# output neuron and the target value.
-	# Error is defined as e=target - output
-	#
-        # We have one output neuron per digit. The 'target' output
-        #   should be as follows:
-        #      When using the logistic function as the activation
-        #          - Correct output neuron should output .8
-        #          - All others should output .2
-        #      When using the hyperbolic tangent as the activation
-        #	   - Correct output neuron should output .6
-        #          - All other neurons should output -.6
-       	###############################################################
+  ###############################################################
+  # Use the 'errors' array to store the error between each
+  # output neuron and the target value.
+  # Error is defined as e=target - output
+  #
+  # We have one output neuron per digit. The 'target' output
+  #   should be as follows:
+  #      When using the logistic function as the activation
+  #          - Correct output neuron should output .8
+  #          - All others should output .2
+  #      When using the hyperbolic tangent as the activation
+  #    - Correct output neuron should output .6
+  #          - All other neurons should output -.6
+  ###############################################################
 
-	errors=zeros(shape=(NeuralNets_global_data.N_out,1))
+  errors=zeros(shape=(NeuralNets_global_data.N_out,1))
 
-	################################################################
-	#
-	# TO DO: Implement the backpropagation method for weight updates
-	#        as discussed in lecture. Be careful to update the
-	#        correct set of weights: W_io for networks with no
-	#        hidden layer, and W_ih, W_ho for networks with
-	#        a hidden layer.
-	################################################################
+  ################################################################
+  #
+  # TO DO: Implement the back propagation method for weight updates
+  #        as discussed in lecture. Be careful to update the
+  #        correct set of weights: W_io for networks with no
+  #        hidden layer, and W_ih, W_ho for networks with
+  #        a hidden layer.
+  ################################################################
 
-	return(errors)
+  out,hid = FeedForward(input_sample)
+
+  return(errors)
 
