@@ -121,7 +121,7 @@ Note: Empirically, I have had success with the following parameters:
 			89.8770599006
 			92.5974365681
 			94.8469788125
-		
+
 		Average classification accuracy on testing set:
 			86.2548692265
 			90.3728436283
@@ -139,7 +139,7 @@ Note: Empirically, I have had success with the following parameters:
 		Report the threshold used: 0.05
 		Number of hidden units: 15
 
-		For the 3 random seeds report: 
+		For the 3 random seeds report:
 
 		List of seeds used:
 			4674
@@ -173,9 +173,10 @@ Note: Empirically, I have had success with the following parameters:
 		values the network won't learn).
 
 1layer hyperbolic tangent gives the best results for all the factors in play.
-2layer hyperbolic tangent gives higher accuracy but is more sensitive to the learning rate. If the
-learning rate is too high, it converges to a very high squared error too early. The number of
-hidden units also seems to affect the convergence of the hyperbolic tangent.
+2layer hyperbolic tangent gives higher accuracy but is more sensitive to the
+learning rate. If the learning rate is too high, it converges to a very high
+squared error too early. The number of hidden units also seems to affect the
+convergence of the hyperbolic tangent. The learning time also takes a while.
 
 The logistic function seems to activate too early, and is less 'fluid' than hyperbolic tangent.
 
@@ -189,18 +190,20 @@ The logistic function seems to activate too early, and is less 'fluid' than hype
 		- Describe the error function
 		- How many layers should you use?
 
-The input would be the positions of every agent, and each important goal. So, 
+The input would be the positions of every agent, and each important goal. So,
 in the case of the cat and mouse, it would be the positions of the cats, mouse,
 and the cheese.
 
 The output layer would be the goodness of each move, and the mouse would pick the
 best move.
 
-The error function could be simple back propagation, because thats all I know.
+The error function could be the same as back propogation's error function.
 
-2 hidden layers would probably be the best. The first hidden layer would learn the features, like
-distance to cat, distance to cheese, number of cats nearby, etc. The second layer
-would help decide between each of these features which is the best move to pick.
+2 hidden layers would probably be the best. The first hidden layer would learn the
+features, like distance to cat, distance to cheese, number of cats nearby, etc.
+The second layer would help decide when to move based on these features. For example,
+if there are a group of cats around the cheese you are going to want to skirt
+around the cheese rather than go straight towards it.
 
 _____________________________________________________
 
