@@ -49,16 +49,26 @@ Note: Empirically, I have had success with the following parameters:
 1 .- (2.5 marks) Train a 1-layer network using the Logistic activation
                function.
 
-		Report the learning rate used:
-		Report the threshold used:
+		Report the learning rate used: 	4.5
+		Report the threshold used:		0.03
 
 		Train the network with 3 different random seeds,
 		for each seed report:
 
 		List of seeds used:
+			4674
+			6054
+			9244
 
 		Average classification accuracy on training set:
+			75.9089720115
+			81.3758828145
+			81.3758828145
+
 		Average classification accuracy on testing set:
+			74.6800222593
+			79.1875347802
+			79.1875347802
 
 		Save a screenshot of the trained network, call your
 		file:
@@ -68,15 +78,25 @@ Note: Empirically, I have had success with the following parameters:
 2 .- (2.5 marks) Repeat the process above but using a 1-layer network
 		with hyperbolic tangent activation function.
 
-		Report the learning rate used:
-		Report the threshold used:
+		Report the learning rate used:	3.0
+		Report the threshold used:		0.05
 
 		For the 3 random seeds report:
 
 		List of seeds used:
+			3491
+			8234
+			5123
 
 		Average classification accuracy on training set:
+			90.8187287471
+			93.1205859273
+			93.277530735
+
 		Average classification accuracy on testing set:
+			87.0339454647
+			90.2058987201
+			90.8180300501
 
 		Save a screenshot of the trained network, call your
 		file:
@@ -86,16 +106,24 @@ Note: Empirically, I have had success with the following parameters:
 3 .- (2.5 marks) Repeat the process above using a 2-layer network
 		with hyperbolic tangent activation function.
 
-		Report the learning rate used:
-		Report the threshold used:
-		Number of hidden units:
+		Report the learning rate used: 0.5
+		Report the threshold used: 0.05
+		Number of hidden units: 20
 
 		For the 3 random seeds report:
 
 		List of seeds used:
+			25589
+			8234
+			5123
 
 		Average classification accuracy on training set:
+			89.8770599006
+			92.5974365681
+		
 		Average classification accuracy on testing set:
+			86.2548692265
+			90.3728436283
 
 		Save a screenshot of the trained network, call your
 		file:
@@ -105,13 +133,16 @@ Note: Empirically, I have had success with the following parameters:
 4 .- (2.5 marks) Repeat the process above using a 2-layer network
 		with logistic activation function.
 
-		Report the learning rate used:
-		Report the threshold used:
-		Number of hidden units:
+		Report the learning rate used: 9.0
+		Report the threshold used: 0.05
+		Number of hidden units: 15
 
-		For the 3 random seeds report:
+		For the 3 random seeds report: 
 
 		List of seeds used:
+			4674
+			6054
+			9244
 
 		Average classification accuracy on training set:
 		Average classification accuracy on testing set:
@@ -151,18 +182,18 @@ doesn't work, or what problems exist.
         	Complete/Working	Partial		Not done
 
 Logistic
- activation
+ activation			X
 
 Hyperbolic
  tangent
-  activation
+  activation 		X
 
-sigmoid_prime()
+sigmoid_prime()		X
 
-Feed-Forward
+Feed-Forward		X
  computation
 
-Training by
+Training by			X
  back-propagation
 _____________________________________________________
 

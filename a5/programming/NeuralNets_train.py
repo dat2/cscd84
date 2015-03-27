@@ -89,7 +89,7 @@ def tanhyp(x):
 #
 ##########################################################
 
-  return (math.exp(x) - math.exp(-x)) / (math.exp(z) + math.exp(-z))
+  return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
 
 def sigmoid_prime(a):
 ##########################################################
@@ -100,9 +100,9 @@ def sigmoid_prime(a):
 #
 ##########################################################
   if (NeuralNets_global_data.sig_type):
-    return 1.0 - a ** 2   # Change this as needed!
+    return 1.0 - (a ** 2)   # Change this as needed!
   else:
-    return a * (1 - a)    # Change this as needed
+    return a * (1.0 - a)    # Change this as needed
 
 def FeedForward(input_sample):
 ##########################################################
@@ -128,8 +128,8 @@ def FeedForward(input_sample):
 #       called depending on what the user specifies.
 ##########################################################
 
-  outputActivation=zeros(shape=(NeuralNets_global_data.N_out,1))    # Array of activation values for output units
-  hiddenActivation=zeros(shape=(NeuralNets_global_data.N_hidden,1)) # Array of activation values for hidden units
+  outputActivation=zeros(shape=(NeuralNets_global_data.N_out))    # Array of activation values for output units
+  hiddenActivation=zeros(shape=(NeuralNets_global_data.N_hidden)) # Array of activation values for hidden units
   # DO remember that the last entry in hiddenActivation should be a constant
   # bias term = 1.0!
 
@@ -141,20 +141,21 @@ def FeedForward(input_sample):
   ##########################################################
 
   # for no hidden layers
-  if NeuralNets_global_data.N_hidden == 0:
+  if not NeuralNets_global_data.N_hidden:
     for o in range(NeuralNets_global_data.N_out):
       outputActivation[o] = sigmoid(dot(input_sample, [NeuralNets_global_data.W_io[i][o] for i in range(NeuralNets_global_data.N_in)]))
+
   # for hidden layers
   else:
 
     # first calculate the hidden layer
     for hid in range(NeuralNets_global_data.N_hidden-1):
-      hiddenActivation[hid] = sigmoid(dot(input_sample, [NeuralNets_global_data.W_ih[i][hid] for i in range(NeuralNets_global_data.N_in)]))
+      hiddenActivation[hid] = sigmoid(sum(NeuralNets_global_data.W_ih[i][hid] * input_sample[i] for i in range(NeuralNets_global_data.N_in)))
     hiddenActivation[-1] = 1.0 # set the bias
 
     # then calculate the output layer
     for o in range(NeuralNets_global_data.N_out):
-      outputActivation[o] = sigmoid(dot(input_sample, [NeuralNets_global_data.W_ho[hid][o] for hid in range(NeuralNets_global_data.N_hidden)]))
+      outputActivation[o] = sigmoid(dot(hiddenActivation.T, [NeuralNets_global_data.W_ho[hid][o] for hid in range(NeuralNets_global_data.N_hidden)]))
 
   return [outputActivation,hiddenActivation]
 
@@ -201,9 +202,9 @@ def trainOneSample(input_sample, input_label):
   #          - All other neurons should output -.6
   ###############################################################
 
-  errors=zeros(shape=(NeuralNets_global_data.N_out,1))
-  errorsPrime=zeros(shape=(NeuralNets_global_data.N_out,1))
-  hErrorsPrime=zeros(shape=(NeuralNets_global_data.N_out,1))
+  errors=zeros(shape=(NeuralNets_global_data.N_out)).tolist()
+  errorsPrime=zeros(shape=(NeuralNets_global_data.N_out)).tolist()
+  hErrorsPrime=zeros(shape=(NeuralNets_global_data.N_hidden)).tolist()
 
   ################################################################
   #
@@ -215,35 +216,38 @@ def trainOneSample(input_sample, input_label):
   ################################################################
 
   out,hid = FeedForward(input_sample)
-  targets = [0.2, 0.8] if NeuralNets_global_data.sig_type == 0 else [-0.6, 0.6]
+  targets = [-0.6, 0.6] if NeuralNets_global_data.sig_type else [0.2, 0.8]
 
   # calculate errors
-  for o in range(NeuralNets_global_data.N_out):
-    errors[o] = targets[o == input_label] - out[o]
-    errorsPrime[o] = sigmoid_prime(out[o]) * errors[o]
+  errors = [targets[o == input_label] - out[o] for o in range(NeuralNets_global_data.N_out)]
+  sigmoidErrors = [sigmoid_prime(out[o]) * errors[o] for o in range(NeuralNets_global_data.N_out)]
 
   # update the weights
-  if NeuralNets_global_data.sig_type == 0:
+  if not NeuralNets_global_data.N_hidden:
     # update the weights
     for i,weights in enumerate(NeuralNets_global_data.W_io):
       for o,w in enumerate(weights):
-        NeuralNets_global_data.W_io[i][o] = w + NeuralNets_global_data.alpha * (errorsPrime[o] * input_sample[i])
+        NeuralNets_global_data.W_io[i][o] = w + weightUpdate(sigmoidErrors[o] , input_sample[i])
 
   else:
-    # calculate the errors for the hidden layer
+    # set hsigmoidErrors
+    hErrors = [hErr(sigmoidErrors,weights) for weights in NeuralNets_global_data.W_ho]
+
+    # output ho weights
     for h in range(NeuralNets_global_data.N_hidden):
-      hErrorsPrime[h] = sigmoid_prime(hid[h]) * dot(errorsPrime, NeuralNets_global_data.W_ho[h])
+      for o in range(NeuralNets_global_data.N_out):
+        NeuralNets_global_data.W_ho[h][o] = NeuralNets_global_data.W_ho[h][o] + weightUpdate(sigmoidErrors[o], hid[h])
 
-    # update the hidden weights
-    for i,weights in enumerate(NeuralNets_global_data.W_ih):
-      for h,w in enumerate(weights):
-        NeuralNets_global_data.W_ih[i][h] = w + NeuralNets_global_data.alpha * (hErrorsPrime[h] * input_sample[i])
-
-    # update the output weights
-    for i,weights in enumerate(NeuralNets_global_data.W_ho):
-      for o,w in enumerate(weights):
-        NeuralNets_global_data.W_ho[i][o] = w + NeuralNets_global_data.alpha * (errorsPrime[o] * hid[i])
-
+    # update ih weights
+    for i in range(NeuralNets_global_data.N_in):
+      for h in range(NeuralNets_global_data.N_hidden):
+        NeuralNets_global_data.W_ih[i][h] = NeuralNets_global_data.W_ih[i][h] + weightUpdate(sigmoid_prime(input_sample[i]) * hErrors[h], input_sample[i])
 
   return(errors)
 
+# alpha * (Err_a * Out_b)
+def weightUpdate(err, out):
+  return NeuralNets_global_data.alpha * err * out
+
+def hErr(errors, weights):
+  return dot(errors, weights)
