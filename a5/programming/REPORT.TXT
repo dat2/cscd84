@@ -120,10 +120,12 @@ Note: Empirically, I have had success with the following parameters:
 		Average classification accuracy on training set:
 			89.8770599006
 			92.5974365681
+			94.8469788125
 		
 		Average classification accuracy on testing set:
 			86.2548692265
 			90.3728436283
+			92.0422927101
 
 		Save a screenshot of the trained network, call your
 		file:
@@ -133,7 +135,7 @@ Note: Empirically, I have had success with the following parameters:
 4 .- (2.5 marks) Repeat the process above using a 2-layer network
 		with logistic activation function.
 
-		Report the learning rate used: 9.0
+		Report the learning rate used: 0.4
 		Report the threshold used: 0.05
 		Number of hidden units: 15
 
@@ -145,7 +147,14 @@ Note: Empirically, I have had success with the following parameters:
 			9244
 
 		Average classification accuracy on training set:
+			9.83520795187
+			10.1752550353
+			9.99215275961
+
 		Average classification accuracy on testing set:
+			10.1279910963
+			10.1279910963
+			10.0166944908
 
 		Save a screenshot of the trained network, call your
 		file:
@@ -163,6 +172,13 @@ Note: Empirically, I have had success with the following parameters:
 		(e.g. unless the parameters are set to very specific
 		values the network won't learn).
 
+1layer hyperbolic tangent gives the best results for all the factors in play.
+2layer hyperbolic tangent gives higher accuracy but is more sensitive to the learning rate. If the
+learning rate is too high, it converges to a very high squared error too early. The number of
+hidden units also seems to affect the convergence of the hyperbolic tangent.
+
+The logistic function seems to activate too early, and is less 'fluid' than hyperbolic tangent.
+
 6 .- (10 marks) Describe how you would build a network to play the cat
 	        and mouse game (move the mouse to help it survive).
 
@@ -172,6 +188,19 @@ Note: Empirically, I have had success with the following parameters:
 		  neurons and what they encode)
 		- Describe the error function
 		- How many layers should you use?
+
+The input would be the positions of every agent, and each important goal. So, 
+in the case of the cat and mouse, it would be the positions of the cats, mouse,
+and the cheese.
+
+The output layer would be the goodness of each move, and the mouse would pick the
+best move.
+
+The error function could be simple back propagation, because thats all I know.
+
+2 hidden layers would probably be the best. The first hidden layer would learn the features, like
+distance to cat, distance to cheese, number of cats nearby, etc. The second layer
+would help decide between each of these features which is the best move to pick.
 
 _____________________________________________________
 
