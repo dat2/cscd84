@@ -241,7 +241,7 @@ def trainOneSample(input_sample, input_label):
     # update ih weights
     for i in range(NeuralNets_global_data.N_in):
       for h in range(NeuralNets_global_data.N_hidden):
-        NeuralNets_global_data.W_ih[i][h] = NeuralNets_global_data.W_ih[i][h] + weightUpdate(sigmoid_prime(input_sample[i]) * hErrors[h], input_sample[i])
+        NeuralNets_global_data.W_ih[i][h] = NeuralNets_global_data.W_ih[i][h] + weightUpdate(sigmoid_prime(hid[h]) * hErrors[h], input_sample[i])
 
   return(errors)
 
