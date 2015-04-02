@@ -1,0 +1,49 @@
+Information Retrieval
+
+- Search Engines - Google
+- finding relations (hidden or unknown) in large datasets
+- Big Data (What's really big data)
+- Data representation (you tube video for example)
+  - annotate the data (store title + movie file, description, etc.)
+  - capture / store / index
+  - annotations are noisy
+- process the video and audio, get some features from the file
+- as many as you can, because you don't know which are useful
+- store features (data structure)
+  - boolean, int, float, matrix / vectors, text, tags
+- feature vector f_v = [x1 x2 ... xn] (hopefully all the same type)
+  - multiple feature vectors of different times
+  - why vectors? similarity
+  - distance between vectors = similarity
+  - lp norm, manhattan = (p=1) norm, euclidean = (p=2) norm,
+  - (Σ_{x_i} x_{i}^{p}) ^ {1/p}
+  L_∞ = max | x_i |
+
+dot product is useful between vectors
+
+feature vector can be seen as a histogram over features
+
+histograms => probability distribution
+           => similarity is comparing two distributions
+    a) histogram intersection Σ_i | h_{1i} - h{2i} |
+       in [0,2]
+
+X^2(h1, h2) =
+KL divergence
+
+document classification
+have some annotated data set with samples of each  category
+  - classes
+  - docs / features / histograms
+
+KNN - K nearest neighbours
+- take new document
+- find distance to all other docs in annotated dataset
+- take closest k documents
+- return majority class
+
+approximate KNN
+as histogram's get larger, distance becomes hard to interpret
+the curse of dimensionality
+
+unit sphere in R^128
